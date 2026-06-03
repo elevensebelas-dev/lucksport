@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la && echo \"---DOWNLOADS---\" && ls -la /Users/hibarherdiana/Downloads/PRD_Lucksport_Website.docx)",
+      "Read(//private/tmp/**)",
+      "Bash(unzip -o -q /Users/hibarherdiana/Downloads/PRD_Lucksport_Website.docx -d prd_extract)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npm ls *)",
+      "Bash(npm run *)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"next-server\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(mkdir -p public/uploads)",
+      "Bash(touch public/uploads/.gitkeep)",
+      "Bash(curl -s -o /dev/null -w \"admin:%{http_code}\\\\n\" http://localhost:3000/admin)",
+      "Bash(curl -s -o /dev/null -w \"home:%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s -X POST http://localhost:3000/api/products -H 'Content-Type: application/json' -d '{ *)",
+      "Bash(python3 -m json.tool)",
+      "Bash(python3 -c \"import json;print\\(len\\(json.load\\(open\\('data/products.json'\\)\\)\\)\\)\")",
+      "Bash(curl -s http://localhost:3000/katalog)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/produk/sepatu-lari-velocity-pro)",
+      "Bash(curl -s -X POST http://localhost:3000/api/products -H \"Content-Type: application/json\" -d '{\"name\":\"\",\"category\":\"Sepatu\",\"price\":1000,\"images\":[\"x\"],\"variants\":[{\"size\":\"M\",\"color\":\"Merah\",\"stock\":1}]}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/products -H \"Content-Type: application/json\" -d '{\"name\":\"Tes\",\"category\":\"Sepatu\",\"price\":1000,\"price_original\":500,\"images\":[\"x\"],\"variants\":[{\"size\":\"M\",\"color\":\"Merah\",\"stock\":1}]}')",
+      "Bash(cd /Users/hibarherdiana/Projects/Lucksport *)",
+      "Bash(mkdir -p \"\\(panel\\)\")",
+      "Bash(rm -f page.tsx)",
+      "Bash(ls -1 \"\\(panel\\)\")",
+      "Bash(grep -iE '\\\\.\\(jpg|jpeg|png|webp|avif|svg|heic|zip\\)$')",
+      "Bash(grep -iE '\\\\.\\(jpg|jpeg|png|webp\\)$')",
+      "Bash(curl -s -L -o public/products/hero-sample.mp4 --max-time 30 \"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4\")",
+      "Bash(git config *)",
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(grep -E 'node_modules|\\\\.next/|\\\\.env$|\\\\.env\\\\.local|/data/.*\\\\.json|uploads/[^.]')",
+      "Bash(xargs du -ch)"
+    ]
+  }
+}
