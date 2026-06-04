@@ -30,6 +30,13 @@ export function waNotifyStock(name: string): string {
   return waLink(`Tolong kabari saya jika ${name} tersedia kembali`);
 }
 
+// Tanya harga/info untuk produk "Call CS" (mis. kategori Perahu)
+export function waInquiry(name: string): string {
+  return waLink(
+    `Halo Lucksport, saya tertarik dengan ${name}. Boleh info harga dan ketersediaannya?`
+  );
+}
+
 export interface CheckoutShipping {
   province: string;
   courier: string;

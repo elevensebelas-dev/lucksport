@@ -2,11 +2,18 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { formatIDR } from "@/lib/products";
+import { formatIDR, isCallForPriceCategory } from "@/lib/products";
 import type { Product, Category, Badge, Variant } from "@/lib/types";
 import { CloseIcon, PlusIcon, TrashIcon } from "@/components/Icons";
 
-const CATEGORIES: Category[] = ["Jersey", "Sepatu", "Celana", "Aksesori", "Lainnya"];
+const CATEGORIES: Category[] = [
+  "Jersey",
+  "Sepatu",
+  "Celana",
+  "Aksesori",
+  "Perahu",
+  "Lainnya",
+];
 const BADGES: { key: Badge; label: string }[] = [
   { key: "new", label: "Baru" },
   { key: "best_seller", label: "Terlaris" },
@@ -300,7 +307,10 @@ export default function AdminProductForm({ initial, onSaved, onCancel }: Props) 
       {/* Harga */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className={label}>Harga Jual (IDR) *</label>
+          <label className={label}>
+            Harga Jual (IDR){" "}
+            {isCallForPriceCategory(form.category) ? "(opsional)" : "*"}
+          </label>
           <input
             type="number"
             className={input}
@@ -309,10 +319,18 @@ export default function AdminProductForm({ initial, onSaved, onCancel }: Props) 
             placeholder="189000"
             min={0}
           />
-          {form.price && (
-            <p className="mt-1 text-xs text-slate-500">
-              {formatIDR(Number(form.price) || 0)}
+          {isCallForPriceCategory(form.category) ? (
+            <p className="mt-1 text-xs text-amber-600">
+              Kategori &quot;{form.category}&quot;: harga tidak ditampilkan di
+              website (pelanggan diarahkan ke tombol &quot;Call CS&quot;). Boleh
+              dikosongkan.
             </p>
+          ) : (
+            form.price && (
+              <p className="mt-1 text-xs text-slate-500">
+                {formatIDR(Number(form.price) || 0)}
+              </p>
+            )
           )}
         </div>
         <div>

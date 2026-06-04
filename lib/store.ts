@@ -11,7 +11,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import fs from "fs";
 import path from "path";
-import { products as SEED } from "./products";
+import { products as SEED, isCallForPriceCategory } from "./products";
 import type { Product, Category, Variant, Badge } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -116,6 +116,7 @@ const CATEGORIES_VALID: Category[] = [
   "Sepatu",
   "Celana",
   "Aksesori",
+  "Perahu",
   "Lainnya",
 ];
 const BADGES_VALID: Badge[] = ["new", "best_seller", "sale"];
@@ -132,8 +133,10 @@ export function validateInput(input: Partial<ProductInput>): {
   if (!CATEGORIES_VALID.includes(category))
     return { ok: false, error: "Kategori tidak valid." };
 
-  const price = Number(input.price);
-  if (!Number.isFinite(price) || price <= 0)
+  // Kategori "Call CS" (mis. Perahu) tidak menampilkan harga → harga boleh 0/kosong.
+  const callForPrice = isCallForPriceCategory(category);
+  const price = Number(input.price) || 0;
+  if (!callForPrice && (!Number.isFinite(price) || price <= 0))
     return { ok: false, error: "Harga harus berupa angka lebih dari 0." };
 
   let price_original: number | null = null;

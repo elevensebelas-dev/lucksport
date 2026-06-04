@@ -7,7 +7,13 @@ import { FilterIcon, CloseIcon, SearchIcon, ChevronDown } from "./Icons";
 import { totalStock } from "@/lib/products";
 import type { Product, Category } from "@/lib/types";
 
-const CATEGORY_OPTIONS: Category[] = ["Jersey", "Sepatu", "Celana", "Aksesori"];
+const CATEGORY_OPTIONS: Category[] = [
+  "Jersey",
+  "Sepatu",
+  "Celana",
+  "Aksesori",
+  "Perahu",
+];
 
 const PRICE_RANGES = [
   { label: "< Rp150rb", min: 0, max: 150000 },
@@ -30,6 +36,7 @@ const categorySlugMap: Record<string, Category> = {
   sepatu: "Sepatu",
   celana: "Celana",
   aksesori: "Aksesori",
+  perahu: "Perahu",
 };
 
 // popularitas didekati dari badge best_seller lalu jumlah stok.

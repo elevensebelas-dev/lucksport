@@ -29,6 +29,9 @@ const PHOTOS = {
   acc2: "photo-1535131749006-b7f58c99034b",
   socks: "photo-1565992441121-4367c2967103",
   cap: "photo-1556817411-31ae72fa3ea0",
+  boat1: "photo-1544551763-46a013bb70d5",
+  boat2: "photo-1559599238-308793637427",
+  boat3: "photo-1505577058444-a3dab90d4253",
 };
 
 const APPAREL_SIZES = ["S", "M", "L", "XL", "XXL"];
@@ -248,6 +251,25 @@ export const products: Product[] = [
     created_at: "2025-03-30T08:00:00Z",
     updated_at: "2025-05-13T08:00:00Z",
   },
+  {
+    product_id: "55555555-0001",
+    slug: "perahu-dayung-fiber-pro",
+    name: "Perahu Dayung Fiber Pro",
+    category: "Perahu",
+    description:
+      "Perahu dayung berbahan fiberglass kuat dan ringan, kapasitas 2-3 orang. Cocok untuk olahraga dayung, memancing, maupun rekreasi air. Tersedia beberapa ukuran & warna. Harga menyesuaikan spesifikasi — silakan hubungi CS kami untuk penawaran dan ketersediaan.",
+    price: 0,
+    price_original: null,
+    images: [img(PHOTOS.boat1), img(PHOTOS.boat2), img(PHOTOS.boat3)],
+    variants: [
+      { size: "2 Orang", color: "Biru", stock: 2 },
+      { size: "3 Orang", color: "Merah", stock: 1 },
+    ],
+    badges: ["new"],
+    is_active: true,
+    created_at: "2025-05-25T08:00:00Z",
+    updated_at: "2025-05-25T08:00:00Z",
+  },
 ];
 
 // ── Query helpers (memodelkan layer data; di produksi diganti CMS/API) ──
@@ -279,6 +301,18 @@ export function getFeaturedProducts(limit = 6): Product[] {
 // Total stok lintas varian — untuk indikator ketersediaan.
 export function totalStock(product: Product): number {
   return product.variants.reduce((sum, v) => sum + v.stock, 0);
+}
+
+// Kategori yang harganya tidak ditampilkan — pelanggan diarahkan menghubungi CS
+// (mis. Perahu, produk high-ticket / harga menyesuaikan spesifikasi).
+export const CALL_FOR_PRICE_CATEGORIES: Category[] = ["Perahu"];
+
+export function isCallForPrice(product: Product): boolean {
+  return CALL_FOR_PRICE_CATEGORIES.includes(product.category);
+}
+
+export function isCallForPriceCategory(category: Category | string): boolean {
+  return (CALL_FOR_PRICE_CATEGORIES as string[]).includes(category);
 }
 
 export type StockStatus = "Tersedia" | "Stok Terbatas" | "Habis";
@@ -318,6 +352,12 @@ export const CATEGORIES: {
     slug: "aksesori",
     description: "Topi, tas & kaos kaki",
     image: img(PHOTOS.acc2, 800),
+  },
+  {
+    name: "Perahu",
+    slug: "perahu",
+    description: "Perahu & olahraga air",
+    image: img(PHOTOS.boat1, 800),
   },
 ];
 

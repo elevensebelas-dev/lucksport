@@ -8,12 +8,14 @@ import {
   formatIDR,
   stockStatus,
   totalStock,
+  isCallForPrice,
 } from "@/lib/products";
+import { waInquiry } from "@/lib/whatsapp";
 import { blurDataURL } from "@/lib/image";
 import type { Product } from "@/lib/types";
 import Badge, { discountPercent } from "./Badge";
 import { RatingDisplay } from "./RatingStars";
-import { CartIcon, HeartIcon, HeartFilledIcon } from "./Icons";
+import { CartIcon, HeartIcon, HeartFilledIcon, WhatsAppIcon } from "./Icons";
 
 export default function ProductCard({
   product,
@@ -28,8 +30,11 @@ export default function ProductCard({
   const stock = totalStock(product);
   const status = stockStatus(stock);
   const soldOut = status === "Habis";
+  const callCS = isCallForPrice(product);
   const hasDiscount =
-    product.price_original != null && product.price_original > product.price;
+    !callCS &&
+    product.price_original != null &&
+    product.price_original > product.price;
 
   // Tambah cepat: pilih varian pertama yang masih ada stok.
   function quickAdd() {
@@ -93,7 +98,7 @@ export default function ProductCard({
           )}
         </button>
 
-        {soldOut && (
+        {!callCS && soldOut && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/60">
             <span className="rounded-full bg-slate-900/80 px-4 py-1.5 text-sm font-bold text-white">
               Stok Habis
@@ -120,13 +125,21 @@ export default function ProductCard({
         </Link>
 
         <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-lg font-bold text-brand-700">
-            {formatIDR(product.price)}
-          </span>
-          {hasDiscount && (
-            <span className="text-sm text-slate-400 line-through">
-              {formatIDR(product.price_original!)}
+          {callCS ? (
+            <span className="text-base font-bold text-brand-700">
+              Hubungi CS untuk harga
             </span>
+          ) : (
+            <>
+              <span className="text-lg font-bold text-brand-700">
+                {formatIDR(product.price)}
+              </span>
+              {hasDiscount && (
+                <span className="text-sm text-slate-400 line-through">
+                  {formatIDR(product.price_original!)}
+                </span>
+              )}
+            </>
           )}
         </div>
 
@@ -136,27 +149,41 @@ export default function ProductCard({
           </div>
         )}
 
-        <p
-          className={`mt-1 text-xs font-medium ${
-            status === "Tersedia"
-              ? "text-green-600"
-              : status === "Stok Terbatas"
-              ? "text-accent-600"
-              : "text-red-500"
-          }`}
-        >
-          {status}
-        </p>
+        {!callCS && (
+          <p
+            className={`mt-1 text-xs font-medium ${
+              status === "Tersedia"
+                ? "text-green-600"
+                : status === "Stok Terbatas"
+                ? "text-accent-600"
+                : "text-red-500"
+            }`}
+          >
+            {status}
+          </p>
+        )}
 
         <div className="mt-auto pt-3">
-          <button
-            onClick={quickAdd}
-            disabled={soldOut}
-            className="btn-primary w-full text-sm"
-          >
-            <CartIcon width={18} height={18} />
-            {soldOut ? "Stok Habis" : "Tambah ke Keranjang"}
-          </button>
+          {callCS ? (
+            <a
+              href={waInquiry(product.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-whatsapp w-full text-sm"
+            >
+              <WhatsAppIcon width={18} height={18} />
+              Call CS
+            </a>
+          ) : (
+            <button
+              onClick={quickAdd}
+              disabled={soldOut}
+              className="btn-primary w-full text-sm"
+            >
+              <CartIcon width={18} height={18} />
+              {soldOut ? "Stok Habis" : "Tambah ke Keranjang"}
+            </button>
+          )}
         </div>
       </div>
     </div>

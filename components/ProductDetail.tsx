@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
-import { formatIDR, stockStatus } from "@/lib/products";
+import { formatIDR, stockStatus, isCallForPrice } from "@/lib/products";
 import { blurDataURL } from "@/lib/image";
 import { discountPercent } from "./Badge";
 import Badge from "./Badge";
 import { RatingDisplay } from "./RatingStars";
 import RestockForm from "./RestockForm";
-import { waBuyProduct, waNotifyStock } from "@/lib/whatsapp";
+import { waBuyProduct, waNotifyStock, waInquiry } from "@/lib/whatsapp";
 import {
   CartIcon,
   WhatsAppIcon,
@@ -83,6 +83,7 @@ export default function ProductDetail({
   }
 
   const soldOut = product.variants.every((v) => v.stock === 0);
+  const callCS = isCallForPrice(product);
 
   function handleAdd() {
     if (!size) {
@@ -209,26 +210,38 @@ export default function ProductDetail({
           )}
 
           {/* Harga */}
-          <div className="mt-4 flex flex-wrap items-baseline gap-3">
-            <span className="text-3xl font-extrabold text-brand-700">
-              {formatIDR(product.price)}
-            </span>
-            {hasDiscount && (
-              <>
-                <span className="text-lg text-slate-400 line-through">
-                  {formatIDR(product.price_original!)}
-                </span>
-                <span className="badge bg-red-500 text-white">
-                  Hemat {discountPercent(product.price, product.price_original!)}%
-                </span>
-              </>
-            )}
-          </div>
+          {callCS ? (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5">
+              <WhatsAppIcon width={20} height={20} className="text-whatsapp" />
+              <span className="text-base font-bold text-brand-800">
+                Harga menyesuaikan — Hubungi CS
+              </span>
+            </div>
+          ) : (
+            <div className="mt-4 flex flex-wrap items-baseline gap-3">
+              <span className="text-3xl font-extrabold text-brand-700">
+                {formatIDR(product.price)}
+              </span>
+              {hasDiscount && (
+                <>
+                  <span className="text-lg text-slate-400 line-through">
+                    {formatIDR(product.price_original!)}
+                  </span>
+                  <span className="badge bg-red-500 text-white">
+                    Hemat {discountPercent(product.price, product.price_original!)}%
+                  </span>
+                </>
+              )}
+            </div>
+          )}
 
           <p className="mt-5 leading-relaxed text-slate-600">
             {product.description}
           </p>
 
+          {/* Varian & stok hanya untuk produk berharga (bukan Call CS) */}
+          {!callCS && (
+          <>
           {/* Warna */}
           <div className="mt-6">
             <p className="mb-2 text-sm font-semibold text-slate-900">
@@ -327,39 +340,53 @@ export default function ProductDetail({
               {error}
             </p>
           )}
+          </>
+          )}
 
           {/* CTA */}
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <button
-              onClick={handleAdd}
-              disabled={soldOut}
-              className="btn-primary flex-1 py-3.5 text-base"
-            >
-              {added ? (
-                <>
-                  <CheckIcon width={20} height={20} /> Ditambahkan!
-                </>
-              ) : (
-                <>
-                  <CartIcon width={20} height={20} />
-                  {soldOut ? "Stok Habis" : "Tambah ke Keranjang"}
-                </>
-              )}
-            </button>
+          {callCS ? (
             <a
-              href={
-                soldOut
-                  ? waNotifyStock(product.name)
-                  : waBuyProduct(product.name, size ?? sizes[0], color)
-              }
+              href={waInquiry(product.name)}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-whatsapp flex-1 py-3.5 text-base"
+              className="btn-whatsapp mt-6 w-full py-3.5 text-base"
             >
               <WhatsAppIcon width={20} height={20} />
-              {soldOut ? "Notifikasi Stok" : "Beli via WhatsApp"}
+              Call CS untuk Harga &amp; Info
             </a>
-          </div>
+          ) : (
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={handleAdd}
+                disabled={soldOut}
+                className="btn-primary flex-1 py-3.5 text-base"
+              >
+                {added ? (
+                  <>
+                    <CheckIcon width={20} height={20} /> Ditambahkan!
+                  </>
+                ) : (
+                  <>
+                    <CartIcon width={20} height={20} />
+                    {soldOut ? "Stok Habis" : "Tambah ke Keranjang"}
+                  </>
+                )}
+              </button>
+              <a
+                href={
+                  soldOut
+                    ? waNotifyStock(product.name)
+                    : waBuyProduct(product.name, size ?? sizes[0], color)
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-whatsapp flex-1 py-3.5 text-base"
+              >
+                <WhatsAppIcon width={20} height={20} />
+                {soldOut ? "Notifikasi Stok" : "Beli via WhatsApp"}
+              </a>
+            </div>
+          )}
 
           {/* Wishlist */}
           <button
@@ -378,7 +405,7 @@ export default function ProductDetail({
           </button>
 
           {/* Notifikasi stok kembali saat habis */}
-          {soldOut && <RestockForm product={product} />}
+          {!callCS && soldOut && <RestockForm product={product} />}
 
           {/* Info ringkas */}
           <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">

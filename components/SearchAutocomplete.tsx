@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { formatIDR } from "@/lib/products";
+import { formatIDR, isCallForPriceCategory } from "@/lib/products";
 import { SearchIcon } from "./Icons";
 
 interface Suggestion {
@@ -144,7 +144,9 @@ export default function SearchAutocomplete({
                       <span className="text-xs text-slate-400">{r.category}</span>
                     </span>
                     <span className="text-sm font-semibold text-brand-700">
-                      {formatIDR(r.price)}
+                      {isCallForPriceCategory(r.category)
+                        ? "Call CS"
+                        : formatIDR(r.price)}
                     </span>
                   </button>
                 </li>

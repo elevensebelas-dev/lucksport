@@ -1,6 +1,12 @@
 // Struktur data produk sesuai PRD 8.2
 
-export type Category = "Jersey" | "Sepatu" | "Celana" | "Aksesori" | "Lainnya";
+export type Category =
+  | "Jersey"
+  | "Sepatu"
+  | "Celana"
+  | "Aksesori"
+  | "Perahu"
+  | "Lainnya";
 
 export type Badge = "new" | "best_seller" | "sale";
 
