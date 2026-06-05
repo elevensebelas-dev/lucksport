@@ -6,16 +6,19 @@ import { useEffect, useState } from "react";
 import Logo from "./Logo";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
-import { waGeneral } from "@/lib/whatsapp";
 import SearchAutocomplete from "./SearchAutocomplete";
 import {
   CartIcon,
   SearchIcon,
   MenuIcon,
   CloseIcon,
-  WhatsAppIcon,
+  ChatIcon,
   HeartIcon,
 } from "./Icons";
+
+// Buka chatbot mengambang dari mana pun (lihat ChatBot.tsx).
+const openChat = () =>
+  window.dispatchEvent(new Event("lucksport:open-chat"));
 
 const NAV = [
   { href: "/katalog", label: "Katalog" },
@@ -93,16 +96,14 @@ export default function Header() {
             <SearchIcon width={22} height={22} />
           </button>
 
-          {/* WA button */}
-          <a
-            href={waGeneral()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden items-center gap-2 rounded-full bg-whatsapp px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-whatsapp-dark sm:inline-flex"
+          {/* Chatbot button */}
+          <button
+            onClick={openChat}
+            className="hidden items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-700 sm:inline-flex"
           >
-            <WhatsAppIcon width={18} height={18} />
-            Chat CS
-          </a>
+            <ChatIcon width={18} height={18} />
+            Chat
+          </button>
 
           {/* Wishlist */}
           <Link
@@ -190,15 +191,16 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
-            <a
-              href={waGeneral()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-whatsapp mt-6 w-full"
+            <button
+              onClick={() => {
+                setMobileOpen(false);
+                openChat();
+              }}
+              className="btn-primary mt-6 w-full"
             >
-              <WhatsAppIcon width={18} height={18} />
-              Chat CS via WhatsApp
-            </a>
+              <ChatIcon width={18} height={18} />
+              Chat dengan Asisten
+            </button>
           </div>
         </div>
       )}

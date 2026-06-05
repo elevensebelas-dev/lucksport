@@ -31,3 +31,6 @@ next-env.d.ts
 /data/*.json
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# folder sumber foto asli (sudah disalin & dibersihkan ke public/gambar-ls)
+/Gambar LS/

@@ -6,7 +6,7 @@ import { blurDataURL } from "@/lib/image";
 // Grid kategori unggulan dengan hover zoom + overlay (PRD 5.1.2)
 export default function CategoryGrid() {
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {CATEGORIES.map((cat) => (
         <Link
           key={cat.slug}

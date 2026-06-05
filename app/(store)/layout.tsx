@@ -1,9 +1,9 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MiniCart from "@/components/MiniCart";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import ChatBot from "@/components/ChatBot";
 
-// Layout storefront: header, footer, mini-cart, dan floating WhatsApp.
+// Layout storefront: header, footer, mini-cart, dan chatbot mengambang.
 // Halaman /admin berada di luar grup ini sehingga tidak memuat chrome toko.
 export default function StoreLayout({
   children,
@@ -16,7 +16,7 @@ export default function StoreLayout({
       <main className="flex-1">{children}</main>
       <Footer />
       <MiniCart />
-      <FloatingWhatsApp />
+      <ChatBot />
     </div>
   );
 }

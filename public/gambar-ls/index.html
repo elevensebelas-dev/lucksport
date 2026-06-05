@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galeri Gambar LS — Lucksport</title>
+<style>
+  body{font-family:system-ui,sans-serif;margin:0;background:#f1f5f9;color:#0f172a}
+  header{background:#1559c0;color:#fff;padding:20px 24px}
+  h1{margin:0;font-size:20px}
+  p{margin:6px 0 0;font-size:14px;opacity:.9}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:24px}
+  .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
+  .card img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#e2e8f0}
+  .card .name{padding:8px 10px;font-size:12px;color:#475569;word-break:break-all}
+</style>
+</head>
+<body>
+<header>
+  <h1>Galeri Gambar LS</h1>
+  <p>23 foto sudah dikonversi ke format web (JPEG) &amp; bisa diakses di /gambar-ls/ls-XX.jpg</p>
+</header>
+<div class="grid" id="g"></div>
+<script>
+  const grid=document.getElementById('g');
+  for(let i=1;i<=23;i++){
+    const n=String(i).padStart(2,'0');
+    const c=document.createElement('div');c.className='card';
+    c.innerHTML='<img loading="lazy" src="/gambar-ls/ls-'+n+'.jpg" alt="ls-'+n+'">'+
+                '<div class="name">ls-'+n+'.jpg</div>';
+    grid.appendChild(c);
+  }
+</script>
+</body>
+</html>

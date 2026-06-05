@@ -1,21 +1,23 @@
+import Image from "next/image";
 import Link from "next/link";
 
+// Logo resmi Luck Sport (public/brand/logo.png). Sudah memuat wordmark
+// "LUCK SPORT", jadi tidak perlu teks tambahan.
 export default function Logo({ className = "" }: { className?: string }) {
   return (
     <Link
       href="/"
-      className={`flex items-center gap-2 font-extrabold tracking-tight ${className}`}
-      aria-label="Lucksport beranda"
+      className={`inline-flex items-center ${className}`}
+      aria-label="Luck Sport beranda"
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-white">
-        {/* Mark: lightning bolt = energi/sporty */}
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z" />
-        </svg>
-      </span>
-      <span className="text-xl text-slate-900">
-        Luck<span className="text-brand-600">sport</span>
-      </span>
+      <Image
+        src="/brand/logo.png"
+        alt="Luck Sport"
+        width={535}
+        height={324}
+        priority
+        className="h-10 w-auto"
+      />
     </Link>
   );
 }

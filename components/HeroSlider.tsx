@@ -25,32 +25,32 @@ interface Slide {
 // otomatis lanjut setelah video selesai.
 const SLIDES: Slide[] = [
   {
-    // Untuk mengubah slide ini menjadi VIDEO, set:
-    //   type: "video", video: "/products/hero-1.mp4",
-    // dan biarkan `image` sebagai poster/fallback. (lihat catatan di atas)
-    image:
-      "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1600&q=75&auto=format&fit=crop",
-    eyebrow: "Koleksi Terbaru",
-    title: "Temukan Gear Olahraga Terbaik",
+    type: "video",
+    video: "/products/hero-1.mp4",
+    image: "/products/hero-1.jpg", // poster/fallback
+    eyebrow: "Luck Sport Indonesia",
+    title: "Petualangan Olahraga Air Dimulai",
     subtitle:
-      "Jersey, sepatu, dan aksesori berkualitas untuk performa maksimalmu.",
+      "Kayak, kano, perahu, dan papan SUP berkualitas untuk dayung & rekreasi air.",
+    cta: { label: "Lihat Perahu", href: "/katalog?kategori=perahu" },
+  },
+  {
+    type: "video",
+    video: "/products/hero-2.mp4",
+    image: "/products/hero-2.jpg",
+    eyebrow: "Luck Sport",
+    title: "Performa di Setiap Langkah",
+    subtitle: "Perlengkapan olahraga berkualitas untuk mendukung aktivitasmu.",
     cta: { label: "Belanja Sekarang", href: "/katalog" },
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1600&q=75&auto=format&fit=crop",
-    eyebrow: "Sepatu Performa",
-    title: "Langkah Lebih Cepat, Lebih Jauh",
-    subtitle: "Sepatu lari & training dengan teknologi bantalan responsif.",
-    cta: { label: "Lihat Sepatu", href: "/katalog?kategori=sepatu" },
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1577212017184-80cc0da11082?w=1600&q=75&auto=format&fit=crop",
-    eyebrow: "Seragam Tim",
-    title: "Jersey untuk Komunitasmu",
-    subtitle: "Bahan adem, breathable, dan siap dipakai bertanding.",
-    cta: { label: "Lihat Jersey", href: "/katalog?kategori=jersey" },
+    type: "video",
+    video: "/products/hero-3.mp4",
+    image: "/products/hero-3.jpg",
+    eyebrow: "Kualitas Teruji",
+    title: "Dibuat untuk Juara",
+    subtitle: "Produk Luck Sport Indonesia — tangguh, ringan, dan tepercaya.",
+    cta: { label: "Lihat Katalog", href: "/katalog" },
   },
 ];
 

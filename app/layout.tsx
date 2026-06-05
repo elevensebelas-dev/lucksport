@@ -29,12 +29,17 @@ export const metadata: Metadata = {
     "lucksport",
     "toko olahraga online",
   ],
+  icons: {
+    icon: "/brand/logo.png",
+    apple: "/brand/logo.png",
+  },
   openGraph: {
     title: `${STORE.name} — ${STORE.tagline}`,
     description:
       "Temukan gear olahraga terbaik. Jersey, sepatu, celana & aksesori. Checkout cepat via WhatsApp.",
     type: "website",
     locale: "id_ID",
+    images: [{ url: "/brand/logo.png" }],
   },
 };
 

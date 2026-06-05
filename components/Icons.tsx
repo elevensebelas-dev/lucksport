@@ -141,6 +141,19 @@ export const HeartFilledIcon = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+export const ChatIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" />
+  </svg>
+);
+
+export const SendIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="m22 2-7 20-4-9-9-4 20-7z" />
+  </svg>
+);
+
 export const FireIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="M12 2s4 4 4 8a4 4 0 0 1-8 0c0-1 .5-2 1-2.5C9 9 12 6 12 2z" />
