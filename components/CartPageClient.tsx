@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useOrders } from "@/context/OrdersContext";
+import { useLang } from "@/context/LanguageContext";
 import { formatIDR } from "@/lib/products";
 import { waCheckout } from "@/lib/whatsapp";
 import { PROVINCES } from "@/lib/shipping";
@@ -22,6 +23,7 @@ import {
 export default function CartPageClient() {
   const { items, subtotal, setQty, removeItem, clear } = useCart();
   const { addOrder } = useOrders();
+  const { t } = useLang();
   const [note, setNote] = useState("");
 
   // Estimasi ongkir (Fase 3)
@@ -80,13 +82,11 @@ export default function CartPageClient() {
           <CartIcon width={40} height={40} />
         </div>
         <h1 className="mt-6 text-2xl font-bold text-slate-900">
-          Keranjangmu kosong
+          {t("cart.empty.title")}
         </h1>
-        <p className="mt-2 text-slate-600">
-          Yuk jelajahi katalog dan temukan gear favoritmu.
-        </p>
+        <p className="mt-2 text-slate-600">{t("cart.empty.desc")}</p>
         <Link href="/katalog" className="btn-primary mt-6">
-          Mulai Belanja
+          {t("cart.startShopping")}
         </Link>
       </div>
     );
@@ -94,9 +94,9 @@ export default function CartPageClient() {
 
   return (
     <div className="container-content py-8 lg:py-12">
-      <h1 className="text-3xl font-extrabold text-slate-900">Keranjang Belanja</h1>
+      <h1 className="text-3xl font-extrabold text-slate-900">{t("cart.title")}</h1>
       <p className="mt-1 text-slate-600">
-        {items.reduce((n, i) => n + i.quantity, 0)} item dalam keranjang
+        {items.reduce((n, i) => n + i.quantity, 0)} item
       </p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
@@ -183,13 +183,13 @@ export default function CartPageClient() {
 
           <div className="mt-4 flex items-center justify-between">
             <Link href="/katalog" className="text-sm font-medium text-brand-600 hover:text-brand-700">
-              ← Lanjutkan Belanja
+              ← {t("cart.continue")}
             </Link>
             <button
               onClick={clear}
               className="text-sm font-medium text-slate-500 hover:text-red-500"
             >
-              Kosongkan Keranjang
+              {t("cart.clear")}
             </button>
           </div>
         </div>
@@ -197,15 +197,15 @@ export default function CartPageClient() {
         {/* Ringkasan */}
         <div className="lg:col-span-1">
           <div className="sticky top-20 rounded-xl border border-slate-200 bg-slate-50 p-5">
-            <h2 className="text-lg font-bold text-slate-900">Ringkasan Pesanan</h2>
+            <h2 className="text-lg font-bold text-slate-900">{t("cart.summary")}</h2>
 
             <div className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-600">Subtotal</span>
+                <span className="text-slate-600">{t("cart.subtotal")}</span>
                 <span className="font-medium text-slate-900">{formatIDR(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Ongkos kirim</span>
+                <span className="text-slate-600">{t("cart.shipping")}</span>
                 <span className="font-medium text-slate-900">
                   {selected ? formatIDR(shippingCost) : "—"}
                 </span>
@@ -215,7 +215,7 @@ export default function CartPageClient() {
             {/* Estimasi ongkir (Fase 3) */}
             <div className="my-4 rounded-lg border border-slate-200 p-3">
               <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                <TruckIcon width={16} height={16} /> Estimasi Ongkir
+                <TruckIcon width={16} height={16} /> {t("cart.shipEstimate")}
               </p>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -229,7 +229,7 @@ export default function CartPageClient() {
                     className="w-full appearance-none rounded-lg border border-slate-300 bg-white py-2 pl-3 pr-8 text-sm focus:border-brand-500 focus:outline-none"
                     aria-label="Provinsi tujuan"
                   >
-                    <option value="">Pilih provinsi…</option>
+                    <option value="">{t("cart.selectProvince")}</option>
                     {PROVINCES.map((p) => (
                       <option key={p} value={p}>{p}</option>
                     ))}
@@ -245,7 +245,7 @@ export default function CartPageClient() {
                   disabled={shipLoading}
                   className="btn-outline whitespace-nowrap px-3 py-2 text-sm"
                 >
-                  {shipLoading ? "…" : "Cek"}
+                  {shipLoading ? "…" : t("cart.check")}
                 </button>
               </div>
 
@@ -291,7 +291,7 @@ export default function CartPageClient() {
             </div>
 
             <div className="flex justify-between border-t border-slate-200 pt-4">
-              <span className="text-base font-semibold text-slate-900">Total</span>
+              <span className="text-base font-semibold text-slate-900">{t("cart.total")}</span>
               <span className="text-xl font-extrabold text-slate-900">
                 {formatIDR(total)}
               </span>
@@ -299,12 +299,12 @@ export default function CartPageClient() {
 
             {/* Catatan pesanan (PRD 5.4.2) */}
             <label className="mt-4 block text-sm font-medium text-slate-700">
-              Catatan pesanan (opsional)
+              {t("cart.note")}
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 rows={3}
-                placeholder="Contoh: tolong dikirim sebelum akhir pekan"
+                placeholder={t("cart.notePlaceholder")}
                 className="mt-1.5 w-full resize-none rounded-lg border border-slate-300 p-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
               />
             </label>
@@ -317,10 +317,10 @@ export default function CartPageClient() {
               className="btn-whatsapp mt-4 w-full py-3.5 text-base"
             >
               <WhatsAppIcon width={20} height={20} />
-              Checkout via WhatsApp
+              {t("cart.checkout")}
             </a>
             <p className="mt-2 text-center text-xs text-slate-500">
-              Pesananmu akan dikirim sebagai ringkasan otomatis ke CS Lucksport.
+              {t("cart.checkoutNote")}
             </p>
           </div>
         </div>

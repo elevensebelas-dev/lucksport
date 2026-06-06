@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useWishlist } from "@/context/WishlistContext";
+import { useLang } from "@/context/LanguageContext";
 import ProductCard from "./ProductCard";
 import { HeartIcon } from "./Icons";
 import type { Product } from "@/lib/types";
@@ -14,6 +15,7 @@ export default function WishlistClient({
   summaries?: Record<string, { average: number; count: number }>;
 }) {
   const { ids, count, clear } = useWishlist();
+  const { t } = useLang();
   const items = products.filter((p) => ids.includes(p.product_id));
 
   if (count === 0) {
@@ -23,14 +25,11 @@ export default function WishlistClient({
           <HeartIcon width={40} height={40} />
         </div>
         <h1 className="mt-6 text-2xl font-bold text-slate-900">
-          Belum ada favorit
+          {t("wish.empty.title")}
         </h1>
-        <p className="mt-2 max-w-md text-slate-600">
-          Tap ikon hati pada produk untuk menyimpannya di sini dan mudah ditemukan
-          nanti.
-        </p>
+        <p className="mt-2 max-w-md text-slate-600">{t("wish.empty.desc")}</p>
         <Link href="/katalog" className="btn-primary mt-6">
-          Jelajahi Katalog
+          {t("wish.explore")}
         </Link>
       </div>
     );
@@ -40,14 +39,14 @@ export default function WishlistClient({
     <div className="container-content py-8 lg:py-12">
       <div className="mb-6 flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900">Favorit Saya</h1>
-          <p className="mt-1 text-slate-600">{count} produk tersimpan</p>
+          <h1 className="text-3xl font-extrabold text-slate-900">{t("wish.title")}</h1>
+          <p className="mt-1 text-slate-600">{count} {t("wish.saved")}</p>
         </div>
         <button
           onClick={clear}
           className="text-sm font-medium text-slate-500 hover:text-red-500"
         >
-          Kosongkan
+          {t("wish.clear")}
         </button>
       </div>
 

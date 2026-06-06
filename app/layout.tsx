@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { OrdersProvider } from "@/context/OrdersContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import Analytics from "@/components/Analytics";
 import { STORE } from "@/lib/config";
 
@@ -57,11 +58,13 @@ export default function RootLayout({
   return (
     <html lang="id" className={poppins.variable}>
       <body>
-        <CartProvider>
-          <WishlistProvider>
-            <OrdersProvider>{children}</OrdersProvider>
-          </WishlistProvider>
-        </CartProvider>
+        <LanguageProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <OrdersProvider>{children}</OrdersProvider>
+            </WishlistProvider>
+          </CartProvider>
+        </LanguageProvider>
         <Analytics />
       </body>
     </html>

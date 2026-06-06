@@ -3,6 +3,7 @@ import HeroSlider from "@/components/HeroSlider";
 import CategoryGrid from "@/components/CategoryGrid";
 import ProductCard from "@/components/ProductCard";
 import JsonLd from "@/components/JsonLd";
+import T from "@/components/T";
 import { getFeaturedProducts } from "@/lib/store";
 import { getRatingSummaries } from "@/lib/reviews";
 import { STORE } from "@/lib/config";
@@ -49,17 +50,21 @@ export default function HomePage() {
       <section className="border-b border-slate-200 bg-slate-50">
         <div className="container-content grid grid-cols-1 gap-4 py-6 sm:grid-cols-3">
           {[
-            { icon: TruckIcon, title: "Pengiriman ke Seluruh Indonesia", desc: "Estimasi & ongkir dikonfirmasi via CS" },
-            { icon: ShieldIcon, title: "Produk Original & Berkualitas", desc: "Foto produk nyata, stok jujur" },
-            { icon: WhatsAppIcon, title: "Respons CS < 5 Menit", desc: "Senin–Sabtu, 08.00–21.00 WIB" },
+            { icon: TruckIcon, title: "trust.shipping.title", desc: "trust.shipping.desc" },
+            { icon: ShieldIcon, title: "trust.quality.title", desc: "trust.quality.desc" },
+            { icon: WhatsAppIcon, title: "trust.cs.title", desc: "trust.cs.desc" },
           ].map((f) => (
             <div key={f.title} className="flex items-center gap-3">
               <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-600">
                 <f.icon width={22} height={22} />
               </span>
               <div>
-                <p className="text-sm font-semibold text-slate-900">{f.title}</p>
-                <p className="text-xs text-slate-500">{f.desc}</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  <T k={f.title} />
+                </p>
+                <p className="text-xs text-slate-500">
+                  <T k={f.desc} />
+                </p>
               </div>
             </div>
           ))}
@@ -71,10 +76,10 @@ export default function HomePage() {
         <div className="mb-8 flex items-end justify-between">
           <div>
             <h2 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">
-              Belanja per Kategori
+              <T k="home.categories.title" />
             </h2>
             <p className="mt-1 text-slate-600">
-              Temukan perlengkapan sesuai kebutuhan olahragamu.
+              <T k="home.categories.subtitle" />
             </p>
           </div>
         </div>
@@ -87,17 +92,17 @@ export default function HomePage() {
           <div className="mb-8 flex items-end justify-between">
             <div>
               <h2 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">
-                Produk Pilihan
+                <T k="home.featured.title" />
               </h2>
               <p className="mt-1 text-slate-600">
-                Yang terbaru dan paling laris minggu ini.
+                <T k="home.featured.subtitle" />
               </p>
             </div>
             <Link
               href="/katalog"
               className="hidden items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700 sm:flex"
             >
-              Lihat Semua <ChevronRight width={16} height={16} />
+              <T k="common.viewAll" /> <ChevronRight width={16} height={16} />
             </Link>
           </div>
 
@@ -113,7 +118,7 @@ export default function HomePage() {
 
           <div className="mt-8 text-center sm:hidden">
             <Link href="/katalog" className="btn-outline">
-              Lihat Semua Produk
+              <T k="common.viewAll" />
             </Link>
           </div>
         </div>
@@ -125,11 +130,10 @@ export default function HomePage() {
           <div className="relative mx-auto max-w-2xl">
             <StarIcon width={36} height={36} className="mx-auto text-accent-400" />
             <h2 className="mt-4 text-2xl font-extrabold sm:text-3xl">
-              Punya pertanyaan sebelum membeli?
+              <T k="home.cta.title" />
             </h2>
             <p className="mt-3 text-brand-100">
-              Tim Customer Service kami siap membantu memilih ukuran, cek stok,
-              dan order grosir untuk tim. Tinggal chat, beres!
+              <T k="home.cta.desc" />
             </p>
             <a
               href="https://wa.me/6281234567890?text=Halo%20Lucksport%2C%20saya%20ingin%20bertanya%20tentang%20produk..."
@@ -138,7 +142,7 @@ export default function HomePage() {
               className="btn-whatsapp mt-7 px-7 py-3.5 text-base"
             >
               <WhatsAppIcon width={20} height={20} />
-              Chat CS Sekarang
+              <T k="home.cta.button" />
             </a>
           </div>
           {/* dekorasi */}

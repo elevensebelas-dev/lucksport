@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "./Logo";
+import T from "./T";
 import { STORE } from "@/lib/config";
 import { CATEGORIES } from "@/lib/products";
 import { WhatsAppIcon } from "./Icons";
@@ -11,8 +12,7 @@ export default function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-xs text-sm text-slate-600">
-            {STORE.tagline}. Temukan gear olahraga terbaik untuk performa
-            maksimalmu.
+            <T k="footer.tagline" />
           </p>
           <a
             href={STORE.instagramUrl}
@@ -29,7 +29,7 @@ export default function Footer() {
 
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wide text-slate-900">
-            Kategori
+            <T k="footer.categories" />
           </h3>
           <ul className="mt-4 space-y-2 text-sm">
             {CATEGORIES.map((c) => (
@@ -47,37 +47,37 @@ export default function Footer() {
 
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wide text-slate-900">
-            Informasi
+            <T k="footer.info" />
           </h3>
           <ul className="mt-4 space-y-2 text-sm">
             <li>
               <Link href="/tentang-kami" className="text-slate-600 hover:text-brand-600">
-                Tentang Kami
+                <T k="nav.about" />
               </Link>
             </li>
             <li>
               <Link href="/faq" className="text-slate-600 hover:text-brand-600">
-                FAQ
+                <T k="nav.faq" />
               </Link>
             </li>
             <li>
               <Link href="/kebijakan" className="text-slate-600 hover:text-brand-600">
-                Syarat & Kebijakan
+                <T k="footer.terms" />
               </Link>
             </li>
             <li>
               <Link href="/katalog" className="text-slate-600 hover:text-brand-600">
-                Katalog Produk
+                <T k="nav.catalog" />
               </Link>
             </li>
             <li>
               <Link href="/promo" className="text-slate-600 hover:text-brand-600">
-                Promo &amp; Diskon
+                <T k="footer.promo" />
               </Link>
             </li>
             <li>
               <Link href="/pesanan" className="text-slate-600 hover:text-brand-600">
-                Riwayat Pesanan
+                <T k="footer.orders" />
               </Link>
             </li>
           </ul>
@@ -85,7 +85,7 @@ export default function Footer() {
 
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wide text-slate-900">
-            Customer Service
+            <T k="footer.cs" />
           </h3>
           <ul className="mt-4 space-y-2 text-sm text-slate-600">
             <li>{STORE.operationalDays}</li>
@@ -99,20 +99,20 @@ export default function Footer() {
             className="btn-whatsapp mt-4 w-full"
           >
             <WhatsAppIcon width={18} height={18} />
-            Chat WhatsApp CS
+            <T k="footer.chatCs" />
           </a>
         </div>
       </div>
 
       <div className="border-t border-slate-200">
         <div className="container-content flex flex-col items-center justify-between gap-2 py-4 text-xs text-slate-500 sm:flex-row">
-          <p>© {new Date().getFullYear()} Lucksport — Semua hak cipta dilindungi.</p>
+          <p>© {new Date().getFullYear()} Luck Sport — <T k="footer.rights" /></p>
           <div className="flex gap-4">
             <Link href="/kebijakan" className="hover:text-brand-600">
-              Kebijakan Privasi
+              <T k="footer.privacy" />
             </Link>
             <Link href="/kebijakan" className="hover:text-brand-600">
-              Syarat & Ketentuan
+              <T k="footer.terms" />
             </Link>
           </div>
         </div>

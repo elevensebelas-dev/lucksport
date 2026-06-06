@@ -11,6 +11,7 @@ import {
   isCallForPrice,
 } from "@/lib/products";
 import { waInquiry } from "@/lib/whatsapp";
+import { useLang } from "@/context/LanguageContext";
 import { blurDataURL } from "@/lib/image";
 import type { Product } from "@/lib/types";
 import Badge, { discountPercent } from "./Badge";
@@ -26,10 +27,17 @@ export default function ProductCard({
 }) {
   const { addItem } = useCart();
   const { has, toggle } = useWishlist();
+  const { t } = useLang();
   const wished = has(product.product_id);
   const stock = totalStock(product);
   const status = stockStatus(stock);
   const soldOut = status === "Habis";
+  const statusKey =
+    status === "Tersedia"
+      ? "status.available"
+      : status === "Stok Terbatas"
+      ? "status.limited"
+      : "status.out";
   const callCS = isCallForPrice(product);
   const hasDiscount =
     !callCS &&
@@ -101,7 +109,7 @@ export default function ProductCard({
         {!callCS && soldOut && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/60">
             <span className="rounded-full bg-slate-900/80 px-4 py-1.5 text-sm font-bold text-white">
-              Stok Habis
+              {t("common.outOfStock")}
             </span>
           </div>
         )}
@@ -109,7 +117,7 @@ export default function ProductCard({
         {/* Hover CTA (PRD 5.2.1) */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 p-3 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
           <span className="pointer-events-auto block rounded-lg bg-white/95 py-2 text-center text-sm font-semibold text-brand-700 shadow">
-            Lihat Detail
+            {t("common.viewDetail")}
           </span>
         </div>
       </Link>
@@ -127,7 +135,7 @@ export default function ProductCard({
         <div className="mt-2 flex items-baseline gap-2">
           {callCS ? (
             <span className="text-base font-bold text-brand-700">
-              Hubungi CS untuk harga
+              {t("common.priceOnRequest")}
             </span>
           ) : (
             <>
@@ -159,7 +167,7 @@ export default function ProductCard({
                 : "text-red-500"
             }`}
           >
-            {status}
+            {t(statusKey)}
           </p>
         )}
 
@@ -172,7 +180,7 @@ export default function ProductCard({
               className="btn-whatsapp w-full text-sm"
             >
               <WhatsAppIcon width={18} height={18} />
-              Call CS
+              {t("common.callCS")}
             </a>
           ) : (
             <button
@@ -181,7 +189,7 @@ export default function ProductCard({
               className="btn-primary w-full text-sm"
             >
               <CartIcon width={18} height={18} />
-              {soldOut ? "Stok Habis" : "Tambah ke Keranjang"}
+              {soldOut ? t("common.outOfStock") : t("common.addToCart")}
             </button>
           )}
         </div>

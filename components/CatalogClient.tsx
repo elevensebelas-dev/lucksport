@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "./ProductCard";
 import { FilterIcon, CloseIcon, SearchIcon, ChevronDown } from "./Icons";
+import { useLang } from "@/context/LanguageContext";
 import { totalStock } from "@/lib/products";
 import type { Product, Category } from "@/lib/types";
 
@@ -19,10 +20,10 @@ const PRICE_RANGES = [
 type SortKey = "terbaru" | "termurah" | "termahal" | "terpopuler";
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-  { key: "terbaru", label: "Terbaru" },
-  { key: "termurah", label: "Harga Terendah" },
-  { key: "termahal", label: "Harga Tertinggi" },
-  { key: "terpopuler", label: "Terpopuler" },
+  { key: "terbaru", label: "catalog.sort.newest" },
+  { key: "termurah", label: "catalog.sort.cheapest" },
+  { key: "termahal", label: "catalog.sort.expensive" },
+  { key: "terpopuler", label: "catalog.sort.popular" },
 ];
 
 const categorySlugMap: Record<string, Category> = {
@@ -45,6 +46,7 @@ export default function CatalogClient({
   products: Product[];
   summaries?: Record<string, { average: number; count: number }>;
 }) {
+  const { t } = useLang();
   const params = useSearchParams();
   const initialCategory = params.get("kategori");
   const initialQuery = params.get("q") ?? "";
@@ -142,7 +144,7 @@ export default function CatalogClient({
     <div className="space-y-6">
       <div>
         <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-900">
-          Kategori
+          {t("catalog.category")}
         </h3>
         <ul className="space-y-2">
           {CATEGORY_OPTIONS.map((c) => (
@@ -163,7 +165,7 @@ export default function CatalogClient({
 
       <div>
         <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-900">
-          Harga
+          {t("catalog.price")}
         </h3>
         <ul className="space-y-2">
           {PRICE_RANGES.map((r, idx) => (
@@ -184,7 +186,7 @@ export default function CatalogClient({
 
       <div>
         <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-900">
-          Ketersediaan
+          {t("catalog.availability")}
         </h3>
         <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
           <input
@@ -193,7 +195,7 @@ export default function CatalogClient({
             onChange={(e) => setInStockOnly(e.target.checked)}
             className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
           />
-          Hanya tampilkan yang tersedia
+          {t("catalog.inStockOnly")}
         </label>
       </div>
 
@@ -202,7 +204,7 @@ export default function CatalogClient({
           onClick={resetFilters}
           className="text-sm font-medium text-brand-600 hover:text-brand-700"
         >
-          Reset filter
+          {t("catalog.reset")}
         </button>
       )}
     </div>
@@ -211,10 +213,8 @@ export default function CatalogClient({
   return (
     <div className="container-content py-8 lg:py-12">
       <div className="mb-6">
-        <h1 className="text-3xl font-extrabold text-slate-900">Katalog Produk</h1>
-        <p className="mt-1 text-slate-600">
-          Jelajahi semua perlengkapan olahraga Lucksport.
-        </p>
+        <h1 className="text-3xl font-extrabold text-slate-900">{t("catalog.title")}</h1>
+        <p className="mt-1 text-slate-600">{t("catalog.subtitle")}</p>
       </div>
 
       {/* Search bar */}
@@ -223,9 +223,9 @@ export default function CatalogClient({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Cari produk berdasarkan nama atau kategori..."
+          placeholder={t("catalog.searchPlaceholder")}
           className="w-full rounded-full border border-slate-300 bg-white py-3 pl-5 pr-12 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-          aria-label="Cari produk"
+          aria-label={t("common.search")}
         />
         <SearchIcon
           width={20}
@@ -244,11 +244,7 @@ export default function CatalogClient({
           {/* Toolbar */}
           <div className="mb-5 flex items-center justify-between gap-3">
             <p className="text-sm text-slate-600">
-              Menampilkan{" "}
-              <span className="font-semibold text-slate-900">{filtered.length}</span>{" "}
-              dari{" "}
-              <span className="font-semibold text-slate-900">{products.length}</span>{" "}
-              produk
+              {t("catalog.showing", { x: filtered.length, y: products.length })}
             </p>
 
             <div className="flex items-center gap-2">
@@ -257,7 +253,7 @@ export default function CatalogClient({
                 onClick={() => setMobileFilterOpen(true)}
                 className="btn-outline px-3 py-2 text-sm lg:hidden"
               >
-                <FilterIcon width={18} height={18} /> Filter
+                <FilterIcon width={18} height={18} /> {t("catalog.filter")}
                 {hasFilters && (
                   <span className="ml-1 h-2 w-2 rounded-full bg-accent-500" />
                 )}
@@ -269,11 +265,11 @@ export default function CatalogClient({
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortKey)}
                   className="appearance-none rounded-lg border border-slate-300 bg-white py-2 pl-3 pr-9 text-sm font-medium text-slate-700 focus:border-brand-500 focus:outline-none"
-                  aria-label="Urutkan"
+                  aria-label={t("catalog.sortBy")}
                 >
                   {SORT_OPTIONS.map((o) => (
                     <option key={o.key} value={o.key}>
-                      {o.label}
+                      {t(o.label)}
                     </option>
                   ))}
                 </select>
@@ -289,14 +285,14 @@ export default function CatalogClient({
           {filtered.length === 0 ? (
             <div className="rounded-xl border border-dashed border-slate-300 py-20 text-center">
               <p className="text-lg font-semibold text-slate-700">
-                Produk tidak ditemukan
+                {t("catalog.empty.title")}
               </p>
               <p className="mt-1 text-sm text-slate-500">
-                Coba ubah kata kunci atau reset filter.
+                {t("catalog.empty.desc")}
               </p>
               {hasFilters && (
                 <button onClick={resetFilters} className="btn-primary mt-4">
-                  Reset Filter
+                  {t("catalog.reset")}
                 </button>
               )}
             </div>
@@ -323,10 +319,10 @@ export default function CatalogClient({
           />
           <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-900">Filter Produk</h2>
+              <h2 className="text-lg font-bold text-slate-900">{t("catalog.filter")}</h2>
               <button
                 onClick={() => setMobileFilterOpen(false)}
-                aria-label="Tutup filter"
+                aria-label={t("catalog.filter")}
                 className="text-slate-500"
               >
                 <CloseIcon />
@@ -337,7 +333,7 @@ export default function CatalogClient({
               onClick={() => setMobileFilterOpen(false)}
               className="btn-primary mt-6 w-full"
             >
-              Tampilkan {filtered.length} Produk
+              {t("catalog.showN", { x: filtered.length })}
             </button>
           </div>
         </div>

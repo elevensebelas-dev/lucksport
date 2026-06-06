@@ -4,6 +4,7 @@ import ProductDetail from "@/components/ProductDetail";
 import ProductCard from "@/components/ProductCard";
 import JsonLd from "@/components/JsonLd";
 import ReviewSection from "@/components/ReviewSection";
+import T from "@/components/T";
 import { formatIDR, totalStock } from "@/lib/products";
 import {
   getProductBySlug,
@@ -116,7 +117,7 @@ export default async function ProductPage({ params }: Params) {
       {related.length > 0 && (
         <section className="container-content py-12">
           <h2 className="mb-6 text-2xl font-extrabold text-slate-900">
-            Pelanggan Juga Menyukai
+            <T k="pd.relatedTitle" />
           </h2>
           <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
             {related.map((p) => (

@@ -22,6 +22,7 @@ export interface Product {
   name: string;
   category: Category;
   description: string;
+  description_en?: string; // deskripsi versi English (opsional)
   price: number;
   price_original: number | null;
   images: string[];

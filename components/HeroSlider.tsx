@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "./Icons";
 import { blurDataURL } from "@/lib/image";
+import { useLang } from "@/context/LanguageContext";
 
 interface Slide {
   type?: "image" | "video"; // default: image
@@ -28,29 +29,28 @@ const SLIDES: Slide[] = [
     type: "video",
     video: "/products/hero-1.mp4",
     image: "/products/hero-1.jpg", // poster/fallback
-    eyebrow: "Luck Sport Indonesia",
-    title: "Petualangan Olahraga Air Dimulai",
-    subtitle:
-      "Kayak, kano, perahu, dan papan SUP berkualitas untuk dayung & rekreasi air.",
-    cta: { label: "Lihat Perahu", href: "/katalog?kategori=perahu" },
+    eyebrow: "hero.1.eyebrow",
+    title: "hero.1.title",
+    subtitle: "hero.1.subtitle",
+    cta: { label: "hero.1.cta", href: "/katalog?kategori=perahu" },
   },
   {
     type: "video",
     video: "/products/hero-2.mp4",
     image: "/products/hero-2.jpg",
-    eyebrow: "Luck Sport",
-    title: "Performa di Setiap Langkah",
-    subtitle: "Perlengkapan olahraga berkualitas untuk mendukung aktivitasmu.",
-    cta: { label: "Belanja Sekarang", href: "/katalog" },
+    eyebrow: "hero.2.eyebrow",
+    title: "hero.2.title",
+    subtitle: "hero.2.subtitle",
+    cta: { label: "hero.2.cta", href: "/katalog" },
   },
   {
     type: "video",
     video: "/products/hero-3.mp4",
     image: "/products/hero-3.jpg",
-    eyebrow: "Kualitas Teruji",
-    title: "Dibuat untuk Juara",
-    subtitle: "Produk Luck Sport Indonesia — tangguh, ringan, dan tepercaya.",
-    cta: { label: "Lihat Katalog", href: "/katalog" },
+    eyebrow: "hero.3.eyebrow",
+    title: "hero.3.title",
+    subtitle: "hero.3.subtitle",
+    cta: { label: "hero.3.cta", href: "/katalog" },
   },
 ];
 
@@ -61,6 +61,7 @@ function isVideo(slide: Slide): boolean {
 }
 
 export default function HeroSlider() {
+  const { t } = useLang();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
@@ -130,7 +131,7 @@ export default function HeroSlider() {
           ) : (
             <Image
               src={slide.image}
-              alt={slide.title}
+              alt={t(slide.title)}
               fill
               priority={i === 0}
               placeholder="blur"
@@ -146,19 +147,19 @@ export default function HeroSlider() {
           <div className="container-content relative flex h-full flex-col justify-center">
             <div className="max-w-xl text-white">
               <span className="inline-block rounded-full bg-accent-500/90 px-3 py-1 text-xs font-bold uppercase tracking-wide">
-                {slide.eyebrow}
+                {t(slide.eyebrow)}
               </span>
               <h1 className="mt-4 text-4xl font-extrabold leading-tight drop-shadow sm:text-5xl lg:text-6xl">
-                {slide.title}
+                {t(slide.title)}
               </h1>
               <p className="mt-4 max-w-md text-base text-slate-200 sm:text-lg">
-                {slide.subtitle}
+                {t(slide.subtitle)}
               </p>
               <Link
                 href={slide.cta.href}
                 className="btn-accent mt-7 px-7 py-3.5 text-base shadow-lg"
               >
-                {slide.cta.label}
+                {t(slide.cta.label)}
               </Link>
             </div>
           </div>

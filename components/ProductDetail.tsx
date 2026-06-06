@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useLang } from "@/context/LanguageContext";
 import { formatIDR, stockStatus, isCallForPrice } from "@/lib/products";
 import { blurDataURL } from "@/lib/image";
 import { discountPercent } from "./Badge";
@@ -45,6 +46,7 @@ export default function ProductDetail({
 }) {
   const { addItem } = useCart();
   const { has, toggle } = useWishlist();
+  const { t, lang } = useLang();
   const wished = has(product.product_id);
 
   const colors = useMemo(
@@ -87,7 +89,7 @@ export default function ProductDetail({
 
   function handleAdd() {
     if (!size) {
-      setError("Silakan pilih ukuran terlebih dahulu.");
+      setError(t("pd.selectSize"));
       return;
     }
     if (stockFor(size, color) <= 0) {
@@ -214,7 +216,7 @@ export default function ProductDetail({
             <div className="mt-4 inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5">
               <WhatsAppIcon width={20} height={20} className="text-whatsapp" />
               <span className="text-base font-bold text-brand-800">
-                Harga menyesuaikan — Hubungi CS
+                {t("pd.priceVia")}
               </span>
             </div>
           ) : (
@@ -236,7 +238,9 @@ export default function ProductDetail({
           )}
 
           <p className="mt-5 leading-relaxed text-slate-600">
-            {product.description}
+            {lang === "en" && product.description_en
+              ? product.description_en
+              : product.description}
           </p>
 
           {/* Varian & stok hanya untuk produk berharga (bukan Call CS) */}
@@ -245,7 +249,7 @@ export default function ProductDetail({
           {/* Warna */}
           <div className="mt-6">
             <p className="mb-2 text-sm font-semibold text-slate-900">
-              Warna: <span className="font-normal text-slate-600">{color}</span>
+              {t("pd.color")}: <span className="font-normal text-slate-600">{color}</span>
             </p>
             <div className="flex flex-wrap gap-2">
               {colors.map((c) => (
@@ -281,12 +285,12 @@ export default function ProductDetail({
           {/* Ukuran */}
           <div className="mt-6">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-semibold text-slate-900">Ukuran</p>
+              <p className="text-sm font-semibold text-slate-900">{t("pd.size")}</p>
               <button
                 onClick={() => setSizeGuideOpen(true)}
                 className="text-sm font-medium text-brand-600 hover:text-brand-700"
               >
-                Panduan Ukuran
+                {t("pd.sizeGuide")}
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -326,11 +330,13 @@ export default function ProductDetail({
               }`}
             >
               <span className="h-2 w-2 rounded-full bg-current" />
-              {selectedStatus}
+              {selectedStatus === "Tersedia"
+                ? t("status.available")
+                : selectedStatus === "Stok Terbatas"
+                ? t("status.limited")
+                : t("status.out")}
               {selectedStatus === "Stok Terbatas" && selectedStock != null && (
-                <span className="text-slate-500">
-                  (tersisa {selectedStock})
-                </span>
+                <span className="text-slate-500">({selectedStock})</span>
               )}
             </p>
           )}
@@ -352,7 +358,7 @@ export default function ProductDetail({
               className="btn-whatsapp mt-6 w-full py-3.5 text-base"
             >
               <WhatsAppIcon width={20} height={20} />
-              Call CS untuk Harga &amp; Info
+              {t("pd.callForInfo")}
             </a>
           ) : (
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -363,12 +369,12 @@ export default function ProductDetail({
               >
                 {added ? (
                   <>
-                    <CheckIcon width={20} height={20} /> Ditambahkan!
+                    <CheckIcon width={20} height={20} /> {t("pd.added")}
                   </>
                 ) : (
                   <>
                     <CartIcon width={20} height={20} />
-                    {soldOut ? "Stok Habis" : "Tambah ke Keranjang"}
+                    {soldOut ? t("common.outOfStock") : t("common.addToCart")}
                   </>
                 )}
               </button>
@@ -383,7 +389,7 @@ export default function ProductDetail({
                 className="btn-whatsapp flex-1 py-3.5 text-base"
               >
                 <WhatsAppIcon width={20} height={20} />
-                {soldOut ? "Notifikasi Stok" : "Beli via WhatsApp"}
+                {soldOut ? t("pd.notifyStock") : t("pd.buyWa")}
               </a>
             </div>
           )}
@@ -401,7 +407,7 @@ export default function ProductDetail({
             ) : (
               <HeartIcon width={18} height={18} />
             )}
-            {wished ? "Tersimpan di favorit" : "Tambah ke favorit"}
+            {wished ? t("pd.savedFav") : t("pd.addToFav")}
           </button>
 
           {/* Notifikasi stok kembali saat habis */}
@@ -411,11 +417,11 @@ export default function ProductDetail({
           <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
             <p className="flex items-center gap-2">
               <WhatsAppIcon width={16} height={16} className="text-whatsapp" />
-              Pembayaran via transfer bank, dikonfirmasi CS via WhatsApp.
+              {t("pd.info.payment")}
             </p>
             <p className="mt-1.5 flex items-center gap-2">
               <CheckIcon width={16} height={16} className="text-brand-600" />
-              CS aktif Senin–Sabtu, 08.00–21.00 WIB.
+              {t("pd.info.hours")}
             </p>
           </div>
         </div>

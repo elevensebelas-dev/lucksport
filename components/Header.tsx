@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import Logo from "./Logo";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useLang } from "@/context/LanguageContext";
 import SearchAutocomplete from "./SearchAutocomplete";
+import LanguageSwitcher from "./LanguageSwitcher";
 import {
   CartIcon,
   SearchIcon,
@@ -21,15 +23,16 @@ const openChat = () =>
   window.dispatchEvent(new Event("lucksport:open-chat"));
 
 const NAV = [
-  { href: "/katalog", label: "Katalog" },
-  { href: "/promo", label: "Promo" },
-  { href: "/tentang-kami", label: "Tentang Kami" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/katalog", key: "nav.catalog" },
+  { href: "/promo", key: "nav.promo" },
+  { href: "/tentang-kami", key: "nav.about" },
+  { href: "/faq", key: "nav.faq" },
 ];
 
 export default function Header() {
   const { count, openCart } = useCart();
   const { count: wishCount } = useWishlist();
+  const { t } = useLang();
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -76,7 +79,7 @@ export default function Header() {
                   active ? "text-brand-600" : "text-slate-700"
                 }`}
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             );
           })}
@@ -96,13 +99,16 @@ export default function Header() {
             <SearchIcon width={22} height={22} />
           </button>
 
+          {/* Language switcher */}
+          <LanguageSwitcher className="hidden sm:inline-flex" />
+
           {/* Chatbot button */}
           <button
             onClick={openChat}
             className="hidden items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-700 sm:inline-flex"
           >
             <ChatIcon width={18} height={18} />
-            Chat
+            {t("common.chat")}
           </button>
 
           {/* Wishlist */}
@@ -144,9 +150,9 @@ export default function Header() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Cari produk..."
+              placeholder={t("common.search")}
               className="w-full rounded-full border border-slate-300 bg-slate-50 py-2.5 pl-4 pr-11 text-sm focus:border-brand-500 focus:bg-white focus:outline-none"
-              aria-label="Cari produk"
+              aria-label={t("common.search")}
             />
             <button
               type="submit"
@@ -187,10 +193,13 @@ export default function Header() {
                   href={item.href}
                   className="rounded-lg px-3 py-3 text-base font-medium text-slate-800 hover:bg-slate-100"
                 >
-                  {item.label}
+                  {t(item.key)}
                 </Link>
               ))}
             </nav>
+            <div className="mt-4 px-3">
+              <LanguageSwitcher />
+            </div>
             <button
               onClick={() => {
                 setMobileOpen(false);
@@ -199,7 +208,7 @@ export default function Header() {
               className="btn-primary mt-6 w-full"
             >
               <ChatIcon width={18} height={18} />
-              Chat dengan Asisten
+              {t("nav.chatAssistant")}
             </button>
           </div>
         </div>

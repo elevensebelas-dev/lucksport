@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useOrders } from "@/context/OrdersContext";
+import { useLang } from "@/context/LanguageContext";
 import { formatIDR } from "@/lib/products";
 import { waCheckout } from "@/lib/whatsapp";
 import { CloseIcon, PlusIcon, MinusIcon, TrashIcon, CartIcon, WhatsAppIcon } from "./Icons";
@@ -11,6 +12,7 @@ import { CloseIcon, PlusIcon, MinusIcon, TrashIcon, CartIcon, WhatsAppIcon } fro
 export default function MiniCart() {
   const { items, isOpen, closeCart, subtotal, setQty, removeItem } = useCart();
   const { addOrder } = useOrders();
+  const { t } = useLang();
 
   return (
     <>
@@ -34,7 +36,7 @@ export default function MiniCart() {
       >
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900">
-            <CartIcon width={22} height={22} /> Keranjang
+            <CartIcon width={22} height={22} /> {t("cart.miniCart")}
           </h2>
           <button onClick={closeCart} aria-label="Tutup keranjang" className="text-slate-500 hover:text-slate-800">
             <CloseIcon />
@@ -46,9 +48,9 @@ export default function MiniCart() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
               <CartIcon width={32} height={32} />
             </div>
-            <p className="text-slate-600">Keranjangmu masih kosong.</p>
+            <p className="text-slate-600">{t("cart.empty.title")}</p>
             <Link href="/katalog" onClick={closeCart} className="btn-primary">
-              Mulai Belanja
+              {t("cart.startShopping")}
             </Link>
           </div>
         ) : (
@@ -129,14 +131,12 @@ export default function MiniCart() {
 
             <div className="border-t border-slate-200 px-5 py-4">
               <div className="flex items-center justify-between text-base">
-                <span className="font-medium text-slate-600">Subtotal</span>
+                <span className="font-medium text-slate-600">{t("cart.subtotal")}</span>
                 <span className="text-xl font-bold text-slate-900">
                   {formatIDR(subtotal)}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-slate-400">
-                Ongkir & konfirmasi stok diproses oleh CS via WhatsApp.
-              </p>
+              <p className="mt-1 text-xs text-slate-400">{t("cart.shipNote")}</p>
               <a
                 href={waCheckout(items)}
                 target="_blank"
@@ -145,14 +145,14 @@ export default function MiniCart() {
                 className="btn-whatsapp mt-3 w-full"
               >
                 <WhatsAppIcon width={20} height={20} />
-                Checkout via WhatsApp
+                {t("cart.checkout")}
               </a>
               <div className="mt-2 flex gap-2">
                 <Link href="/keranjang" onClick={closeCart} className="btn-outline flex-1 text-sm">
-                  Lihat Keranjang
+                  {t("cart.viewCart")}
                 </Link>
                 <button onClick={closeCart} className="btn-outline flex-1 text-sm">
-                  Lanjut Belanja
+                  {t("cart.continue")}
                 </button>
               </div>
             </div>

@@ -19,6 +19,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Kano outrigger (bercadik) Luck Sport untuk dayung rekreasi maupun latihan. Stabil di air berkat penyeimbang samping. Hubungi CS untuk spesifikasi & harga.",
+    description_en:
+      "Luck Sport outrigger canoe for recreational and training paddling. Stable on the water thanks to its side stabilizer. Contact CS for specs & price.",
     price: 0,
     price_original: null,
     images: ["/gambar-ls/ls-01.jpg"],
@@ -35,6 +37,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Kayak balap empat pendayung (K4) berbahan serat karbon — ringan, kaku, dan cepat untuk nomor sprint. Hubungi CS untuk spesifikasi & harga.",
+    description_en:
+      "Four-paddler racing kayak (K4) in carbon fiber — light, stiff, and fast for sprint events. Contact CS for specs & price.",
     price: 0,
     price_original: null,
     images: ["/gambar-ls/ls-02.jpg", "/gambar-ls/ls-09.jpg"],
@@ -51,6 +55,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Kano balap satu pendayung (C1) berbahan fiberglass yang tangguh dan ekonomis. Cocok untuk latihan & kompetisi. Hubungi CS untuk detail.",
+    description_en:
+      "Single-paddler racing canoe (C1) in tough, economical fiberglass. Great for training & competition. Contact CS for details.",
     price: 0,
     price_original: null,
     images: ["/gambar-ls/ls-03.jpg"],
@@ -67,6 +73,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Kayak slalom Luck Sport — lincah dan responsif untuk arung jeram & lintasan slalom. Hubungi CS untuk spesifikasi & harga.",
+    description_en:
+      "Luck Sport slalom kayak — agile and responsive for whitewater & slalom courses. Contact CS for specs & price.",
     price: 0,
     price_original: null,
     images: ["/gambar-ls/ls-04.jpg"],
@@ -83,6 +91,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Kayak balap satu pendayung (K1) serat karbon — ringan dan cepat untuk nomor sprint. Hubungi CS untuk spesifikasi & harga.",
+    description_en:
+      "Single-paddler racing kayak (K1) in carbon fiber — light and fast for sprint events. Contact CS for specs & price.",
     price: 0,
     price_original: null,
     images: ["/gambar-ls/ls-05.jpg"],
@@ -99,6 +109,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Kayak balap dua pendayung berbahan serat karbon, stabil dan bertenaga. Hubungi CS untuk spesifikasi & harga.",
+    description_en:
+      "Two-paddler racing kayak in carbon fiber — stable and powerful. Contact CS for specs & price.",
     price: 0,
     price_original: null,
     images: ["/gambar-ls/ls-06.jpg"],
@@ -115,6 +127,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Kayak satu pendayung (K1) berbahan fiberglass yang kuat dan ekonomis. Ideal untuk latihan. Hubungi CS untuk detail.",
+    description_en:
+      "Single-paddler kayak (K1) in strong, economical fiberglass. Ideal for training. Contact CS for details.",
     price: 0,
     price_original: null,
     images: ["/gambar-ls/ls-07.jpg"],
@@ -131,6 +145,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Kano balap dua pendayung (C2) serat karbon untuk performa kompetisi. Hubungi CS untuk spesifikasi & harga.",
+    description_en:
+      "Two-paddler racing canoe (C2) in carbon fiber for competition performance. Contact CS for specs & price.",
     price: 0,
     price_original: null,
     images: ["/gambar-ls/ls-08.jpg"],
@@ -147,6 +163,8 @@ export const products: Product[] = [
     category: "Perahu",
     description:
       "Perahu karet LCR (inflatable boat) Luck Sport untuk SAR, patroli, dan rekreasi air. Tahan banting dengan lantai aluminium. Hubungi CS untuk ukuran & harga.",
+    description_en:
+      "Luck Sport LCR inflatable boat for SAR, patrol, and water recreation. Rugged build with an aluminum floor. Contact CS for sizes & price.",
     price: 0,
     price_original: null,
     images: [

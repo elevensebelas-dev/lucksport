@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { STORE } from "@/lib/config";
 import { formatIDR, isCallForPriceCategory } from "@/lib/products";
 import { waGeneral } from "@/lib/whatsapp";
-import { botReply, GREETING } from "@/lib/chatbot";
+import { useLang } from "@/context/LanguageContext";
+import { botReply, greeting } from "@/lib/chatbot";
 import {
   ChatIcon,
   SendIcon,
@@ -33,6 +33,7 @@ let _id = 0;
 const nextId = () => ++_id;
 
 export default function ChatBot() {
+  const { t, lang } = useLang();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [chips, setChips] = useState<string[]>([]);
@@ -50,10 +51,11 @@ export default function ChatBot() {
   // Sapaan otomatis saat pertama dibuka.
   useEffect(() => {
     if (open && messages.length === 0) {
-      setMessages([{ id: nextId(), from: "bot", text: GREETING.text }]);
-      setChips(GREETING.chips ?? []);
+      const g = greeting(lang);
+      setMessages([{ id: nextId(), from: "bot", text: g.text }]);
+      setChips(g.chips ?? []);
     }
-  }, [open, messages.length]);
+  }, [open, messages.length, lang]);
 
   // Auto-scroll ke bawah.
   useEffect(() => {
@@ -72,7 +74,7 @@ export default function ChatBot() {
     setChips([]);
     setTyping(true);
 
-    const reply = botReply(text);
+    const reply = botReply(text, lang);
 
     // Jeda kecil agar terasa natural (tetap instan).
     await new Promise((r) => setTimeout(r, 350));
@@ -87,18 +89,18 @@ export default function ChatBot() {
         const data = await res.json();
         await new Promise((r) => setTimeout(r, 250));
         if (Array.isArray(data.results) && data.results.length > 0) {
-          pushBot({ text: "Ini yang saya temukan: 👇", products: data.results });
-          setChips(["Cara pesan", "Hubungi CS"]);
+          pushBot({ text: t("bot.found"), products: data.results });
+          setChips(
+            lang === "en" ? ["How to order", "Contact CS"] : ["Cara pesan", "Hubungi CS"]
+          );
         } else {
-          pushBot({
-            text:
-              "Hmm, saya belum menemukan produk itu. Mau lihat katalog lengkap atau terhubung ke CS?",
-            wa: true,
-          });
-          setChips(["Lihat produk", "Hubungi CS"]);
+          pushBot({ text: t("bot.notFound"), wa: true });
+          setChips(
+            lang === "en" ? ["View products", "Contact CS"] : ["Lihat produk", "Hubungi CS"]
+          );
         }
       } catch {
-        pushBot({ text: "Maaf, pencarian sedang bermasalah. Coba hubungi CS ya 🙏", wa: true });
+        pushBot({ text: t("bot.searchError"), wa: true });
       } finally {
         setTyping(false);
       }
@@ -118,7 +120,7 @@ export default function ChatBot() {
             <ChatIcon width={24} height={24} />
             <span className="absolute -right-1 -top-1 h-2.5 w-2.5 animate-pulse rounded-full bg-green-400 ring-2 ring-white" />
           </span>
-          <span className="text-sm font-semibold">Chat • Balas Instan</span>
+          <span className="text-sm font-semibold">{t("bot.launcher")}</span>
         </button>
       )}
 
@@ -132,9 +134,9 @@ export default function ChatBot() {
                 <ChatIcon width={20} height={20} />
               </span>
               <div>
-                <p className="text-sm font-bold leading-tight">Asisten Luck Sport</p>
+                <p className="text-sm font-bold leading-tight">{t("bot.title")}</p>
                 <p className="flex items-center gap-1 text-xs text-brand-100">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> Online · balas instan
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> {t("bot.online")}
                 </p>
               </div>
             </div>
@@ -190,7 +192,7 @@ export default function ChatBot() {
                       rel="noopener noreferrer"
                       className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-whatsapp px-3 py-2 text-xs font-semibold text-white hover:bg-whatsapp-dark"
                     >
-                      <WhatsAppIcon width={16} height={16} /> Hubungi CS via WhatsApp
+                      <WhatsAppIcon width={16} height={16} /> {t("bot.wa")}
                     </a>
                   )}
                 </div>
@@ -235,7 +237,7 @@ export default function ChatBot() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ketik pesan…"
+              placeholder={t("bot.placeholder")}
               className="flex-1 rounded-full border border-slate-300 px-4 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
               aria-label="Pesan"
             />

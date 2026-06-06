@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { formatIDR, isCallForPriceCategory } from "@/lib/products";
+import { useLang } from "@/context/LanguageContext";
 import { SearchIcon } from "./Icons";
 
 interface Suggestion {
@@ -20,6 +21,7 @@ export default function SearchAutocomplete({
   className?: string;
 }) {
   const router = useRouter();
+  const { t } = useLang();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -101,9 +103,9 @@ export default function SearchAutocomplete({
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => results.length && setOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder="Cari produk..."
+          placeholder={t("common.search")}
           className="w-44 rounded-full border border-slate-300 bg-slate-50 py-2 pl-4 pr-10 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100 lg:w-64"
-          aria-label="Cari produk"
+          aria-label={t("common.search")}
           aria-expanded={open}
           aria-autocomplete="list"
         />
