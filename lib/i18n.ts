@@ -21,6 +21,7 @@ const id: Dict = {
   "common.search": "Cari produk...",
   "common.loading": "Memuat…",
   "common.chat": "Chat",
+  "common.home": "Beranda",
 
   // Status stok
   "status.available": "Tersedia",
@@ -48,8 +49,8 @@ const id: Dict = {
   // Home sections
   "home.categories.title": "Belanja per Kategori",
   "home.categories.subtitle": "Temukan perlengkapan sesuai kebutuhan olahragamu.",
-  "home.featured.title": "Produk Pilihan",
-  "home.featured.subtitle": "Produk olahraga air unggulan kami.",
+  "home.featured.title": "Produk",
+  "home.featured.subtitle": "Semua produk olahraga air Luck Sport.",
   "home.cta.title": "Punya pertanyaan sebelum membeli?",
   "home.cta.desc":
     "Tim kami siap membantu memilih produk, cek spesifikasi, dan penawaran. Tinggal chat, beres!",
@@ -176,6 +177,7 @@ const en: Dict = {
   "common.search": "Search products...",
   "common.loading": "Loading…",
   "common.chat": "Chat",
+  "common.home": "Home",
 
   "status.available": "Available",
   "status.limited": "Limited Stock",
@@ -199,8 +201,8 @@ const en: Dict = {
 
   "home.categories.title": "Shop by Category",
   "home.categories.subtitle": "Find the right gear for your water sport.",
-  "home.featured.title": "Featured Products",
-  "home.featured.subtitle": "Our top water-sports products.",
+  "home.featured.title": "Products",
+  "home.featured.subtitle": "All Luck Sport water-sports products.",
   "home.cta.title": "Questions before you buy?",
   "home.cta.desc":
     "Our team is ready to help you choose, check specs, and get a quote. Just chat with us!",

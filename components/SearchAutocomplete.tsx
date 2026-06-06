@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { formatIDR, isCallForPriceCategory } from "@/lib/products";
+import { formatIDR, isCallForPriceCategory, categoryLabel } from "@/lib/products";
 import { useLang } from "@/context/LanguageContext";
 import { SearchIcon } from "./Icons";
 
@@ -21,7 +21,7 @@ export default function SearchAutocomplete({
   className?: string;
 }) {
   const router = useRouter();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -143,7 +143,7 @@ export default function SearchAutocomplete({
                       <span className="block truncate text-sm font-medium text-slate-800">
                         {r.name}
                       </span>
-                      <span className="text-xs text-slate-400">{r.category}</span>
+                      <span className="text-xs text-slate-400">{categoryLabel(r.category, lang)}</span>
                     </span>
                     <span className="text-sm font-semibold text-brand-700">
                       {isCallForPriceCategory(r.category)

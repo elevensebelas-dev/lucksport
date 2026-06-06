@@ -112,11 +112,10 @@ export interface ProductInput {
 }
 
 const CATEGORIES_VALID: Category[] = [
-  "Jersey",
-  "Sepatu",
-  "Celana",
-  "Aksesori",
-  "Perahu",
+  "Kayak",
+  "Kano",
+  "Perahu Karet",
+  "SUP",
   "Lainnya",
 ];
 const BADGES_VALID: Badge[] = ["new", "best_seller", "sale"];

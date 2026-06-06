@@ -4,13 +4,13 @@ import CategoryGrid from "@/components/CategoryGrid";
 import ProductCard from "@/components/ProductCard";
 import JsonLd from "@/components/JsonLd";
 import T from "@/components/T";
-import { getFeaturedProducts } from "@/lib/store";
+import { getActiveProducts } from "@/lib/store";
 import { getRatingSummaries } from "@/lib/reviews";
 import { STORE } from "@/lib/config";
 import { ChevronRight, TruckIcon, ShieldIcon, WhatsAppIcon, StarIcon } from "@/components/Icons";
 
 export default function HomePage() {
-  const featured = getFeaturedProducts(6);
+  const featured = getActiveProducts();
   const summaries = getRatingSummaries();
   const base = `https://${STORE.domain}`;
 

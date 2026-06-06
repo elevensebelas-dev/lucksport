@@ -7,11 +7,10 @@ import type { Product, Category, Badge, Variant } from "@/lib/types";
 import { CloseIcon, PlusIcon, TrashIcon } from "@/components/Icons";
 
 const CATEGORIES: Category[] = [
-  "Jersey",
-  "Sepatu",
-  "Celana",
-  "Aksesori",
-  "Perahu",
+  "Kayak",
+  "Kano",
+  "Perahu Karet",
+  "SUP",
   "Lainnya",
 ];
 const BADGES: { key: Badge; label: string }[] = [
@@ -41,7 +40,7 @@ interface FormState {
 function toState(p?: Product): FormState {
   return {
     name: p?.name ?? "",
-    category: p?.category ?? "Jersey",
+    category: p?.category ?? "Kayak",
     description: p?.description ?? "",
     price: p ? String(p.price) : "",
     price_original: p?.price_original != null ? String(p.price_original) : "",
@@ -181,10 +180,10 @@ export default function AdminProductForm({ initial, onSaved, onCancel }: Props) 
     // Tebak kategori dari kata kunci
     const lower = text.toLowerCase();
     let category = form.category;
-    if (/jersey|kaos tim|seragam/.test(lower)) category = "Jersey";
-    else if (/sepatu|shoes|running|futsal shoes/.test(lower)) category = "Sepatu";
-    else if (/celana|short|jogger|pants/.test(lower)) category = "Celana";
-    else if (/topi|tas|kaos kaki|sock|cap|aksesori/.test(lower)) category = "Aksesori";
+    if (/kayak|k1|k2|k4|slalom/.test(lower)) category = "Kayak";
+    else if (/kano|canoe|c1|c2|outrigger/.test(lower)) category = "Kano";
+    else if (/perahu karet|inflatable|lcr|karet|rescue/.test(lower)) category = "Perahu Karet";
+    else if (/sup|paddle board|stand-up|stand up/.test(lower)) category = "SUP";
 
     patch({
       name: firstLine.replace(/#[^\s#]+/g, "").slice(0, 80).trim() || form.name,

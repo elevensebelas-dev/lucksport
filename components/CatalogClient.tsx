@@ -5,10 +5,10 @@ import { useSearchParams } from "next/navigation";
 import ProductCard from "./ProductCard";
 import { FilterIcon, CloseIcon, SearchIcon, ChevronDown } from "./Icons";
 import { useLang } from "@/context/LanguageContext";
-import { totalStock } from "@/lib/products";
+import { totalStock, categoryLabel } from "@/lib/products";
 import type { Product, Category } from "@/lib/types";
 
-const CATEGORY_OPTIONS: Category[] = ["Perahu"];
+const CATEGORY_OPTIONS: Category[] = ["Kayak", "Kano", "Perahu Karet", "SUP"];
 
 const PRICE_RANGES = [
   { label: "< Rp150rb", min: 0, max: 150000 },
@@ -27,11 +27,10 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 ];
 
 const categorySlugMap: Record<string, Category> = {
-  jersey: "Jersey",
-  sepatu: "Sepatu",
-  celana: "Celana",
-  aksesori: "Aksesori",
-  perahu: "Perahu",
+  kayak: "Kayak",
+  kano: "Kano",
+  "perahu-karet": "Perahu Karet",
+  sup: "SUP",
 };
 
 // popularitas didekati dari badge best_seller lalu jumlah stok.
@@ -46,7 +45,7 @@ export default function CatalogClient({
   products: Product[];
   summaries?: Record<string, { average: number; count: number }>;
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const params = useSearchParams();
   const initialCategory = params.get("kategori");
   const initialQuery = params.get("q") ?? "";
@@ -156,7 +155,7 @@ export default function CatalogClient({
                   onChange={() => toggleCategory(c)}
                   className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
                 />
-                {c}
+                {categoryLabel(c, lang)}
               </label>
             </li>
           ))}

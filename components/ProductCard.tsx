@@ -9,6 +9,7 @@ import {
   stockStatus,
   totalStock,
   isCallForPrice,
+  categoryLabel,
 } from "@/lib/products";
 import { waInquiry } from "@/lib/whatsapp";
 import { useLang } from "@/context/LanguageContext";
@@ -27,7 +28,7 @@ export default function ProductCard({
 }) {
   const { addItem } = useCart();
   const { has, toggle } = useWishlist();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const wished = has(product.product_id);
   const stock = totalStock(product);
   const status = stockStatus(stock);
@@ -124,7 +125,7 @@ export default function ProductCard({
 
       <div className="flex flex-1 flex-col p-4">
         <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-          {product.category}
+          {categoryLabel(product.category, lang)}
         </p>
         <Link href={`/produk/${product.slug}`} className="mt-1">
           <h3 className="line-clamp-2 font-semibold text-slate-900 hover:text-brand-600">

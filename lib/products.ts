@@ -16,7 +16,7 @@ export const products: Product[] = [
     product_id: "ls-boat-01",
     slug: "luck-sport-outrigger-canoe",
     name: "Luck Sport Outrigger Canoe",
-    category: "Perahu",
+    category: "Kano",
     description:
       "Kano outrigger (bercadik) Luck Sport untuk dayung rekreasi maupun latihan. Stabil di air berkat penyeimbang samping. Hubungi CS untuk spesifikasi & harga.",
     description_en:
@@ -34,7 +34,7 @@ export const products: Product[] = [
     product_id: "ls-boat-02",
     slug: "luck-sport-kayak-four-k4-carbon-fiber",
     name: "Luck Sport Kayak Four (K4) - Carbon Fiber",
-    category: "Perahu",
+    category: "Kayak",
     description:
       "Kayak balap empat pendayung (K4) berbahan serat karbon — ringan, kaku, dan cepat untuk nomor sprint. Hubungi CS untuk spesifikasi & harga.",
     description_en:
@@ -52,7 +52,7 @@ export const products: Product[] = [
     product_id: "ls-boat-03",
     slug: "luck-sport-canoe-single-c1-fiberglass",
     name: "Luck Sport Canoe Single (C1) - Fiberglass",
-    category: "Perahu",
+    category: "Kano",
     description:
       "Kano balap satu pendayung (C1) berbahan fiberglass yang tangguh dan ekonomis. Cocok untuk latihan & kompetisi. Hubungi CS untuk detail.",
     description_en:
@@ -70,7 +70,7 @@ export const products: Product[] = [
     product_id: "ls-boat-04",
     slug: "luck-sport-kayak-slalom",
     name: "Luck Sport Kayak Slalom",
-    category: "Perahu",
+    category: "Kayak",
     description:
       "Kayak slalom Luck Sport — lincah dan responsif untuk arung jeram & lintasan slalom. Hubungi CS untuk spesifikasi & harga.",
     description_en:
@@ -88,7 +88,7 @@ export const products: Product[] = [
     product_id: "ls-boat-05",
     slug: "luck-sport-kayak-single-k1-carbon-fiber",
     name: "Luck Sport Kayak Single (K1) - Carbon Fiber",
-    category: "Perahu",
+    category: "Kayak",
     description:
       "Kayak balap satu pendayung (K1) serat karbon — ringan dan cepat untuk nomor sprint. Hubungi CS untuk spesifikasi & harga.",
     description_en:
@@ -106,7 +106,7 @@ export const products: Product[] = [
     product_id: "ls-boat-06",
     slug: "luck-sport-kayak-double-carbon-fiber",
     name: "Luck Sport Kayak Double - Carbon Fiber",
-    category: "Perahu",
+    category: "Kayak",
     description:
       "Kayak balap dua pendayung berbahan serat karbon, stabil dan bertenaga. Hubungi CS untuk spesifikasi & harga.",
     description_en:
@@ -124,7 +124,7 @@ export const products: Product[] = [
     product_id: "ls-boat-07",
     slug: "luck-sport-kayak-single-k1-fiberglass",
     name: "Luck Sport Kayak Single (K1) - Fiberglass",
-    category: "Perahu",
+    category: "Kayak",
     description:
       "Kayak satu pendayung (K1) berbahan fiberglass yang kuat dan ekonomis. Ideal untuk latihan. Hubungi CS untuk detail.",
     description_en:
@@ -142,7 +142,7 @@ export const products: Product[] = [
     product_id: "ls-boat-08",
     slug: "luck-sport-canoe-double-c2-carbon-fiber",
     name: "Luck Sport Canoe Double (C2) - Carbon Fiber",
-    category: "Perahu",
+    category: "Kano",
     description:
       "Kano balap dua pendayung (C2) serat karbon untuk performa kompetisi. Hubungi CS untuk spesifikasi & harga.",
     description_en:
@@ -160,7 +160,7 @@ export const products: Product[] = [
     product_id: "ls-boat-09",
     slug: "luck-sport-lcr-inflatable-boat",
     name: "Luck Sport LCR Inflatable Boat",
-    category: "Perahu",
+    category: "Perahu Karet",
     description:
       "Perahu karet LCR (inflatable boat) Luck Sport untuk SAR, patroli, dan rekreasi air. Tahan banting dengan lantai aluminium. Hubungi CS untuk ukuran & harga.",
     description_en:
@@ -173,6 +173,24 @@ export const products: Product[] = [
       "/gambar-ls/ls-12.jpg",
       "/gambar-ls/ls-13.jpg",
     ],
+    variants: VARIANT,
+    badges: ["new"],
+    is_active: true,
+    created_at: "2025-05-25T08:00:00Z",
+    updated_at: "2025-05-25T08:00:00Z",
+  },
+  {
+    product_id: "ls-boat-10",
+    slug: "luck-sport-sup-board",
+    name: "Luck Sport SUP Board",
+    category: "SUP",
+    description:
+      "Papan Stand-Up Paddle (SUP) Luck Sport — stabil dan ringan untuk rekreasi maupun latihan di danau dan pantai. Hubungi CS untuk ukuran & harga.",
+    description_en:
+      "Luck Sport Stand-Up Paddle (SUP) board — stable and light for recreation and training on lakes and beaches. Contact CS for sizes & price.",
+    price: 0,
+    price_original: null,
+    images: ["/gambar-ls/ls-16.jpg", "/gambar-ls/ls-20.jpg"],
     variants: VARIANT,
     badges: ["new"],
     is_active: true,
@@ -220,9 +238,14 @@ export function stockStatus(stock: number): StockStatus {
   return "Tersedia";
 }
 
-// Kategori yang harganya tidak ditampilkan — pelanggan diarahkan menghubungi CS
-// (mis. Perahu, produk high-ticket / harga menyesuaikan spesifikasi).
-export const CALL_FOR_PRICE_CATEGORIES: Category[] = ["Perahu"];
+// Semua kategori produk olahraga air memakai skema "Call CS" (harga
+// menyesuaikan spesifikasi → pelanggan diarahkan menghubungi CS).
+export const CALL_FOR_PRICE_CATEGORIES: Category[] = [
+  "Kayak",
+  "Kano",
+  "Perahu Karet",
+  "SUP",
+];
 
 export function isCallForPrice(product: Product): boolean {
   return CALL_FOR_PRICE_CATEGORIES.includes(product.category);
@@ -232,17 +255,62 @@ export function isCallForPriceCategory(category: Category | string): boolean {
   return (CALL_FOR_PRICE_CATEGORIES as string[]).includes(category);
 }
 
+// Label kategori untuk tampilan (Indonesia = nilai data; English = terjemahan).
+const CATEGORY_LABEL_EN: Record<string, string> = {
+  Kayak: "Kayak",
+  Kano: "Canoe",
+  "Perahu Karet": "Inflatable Boat",
+  SUP: "SUP",
+  Lainnya: "Others",
+};
+
+export function categoryLabel(category: string, lang: "id" | "en"): string {
+  return lang === "en" ? CATEGORY_LABEL_EN[category] ?? category : category;
+}
+
+// Slug URL per kategori (untuk link filter ?kategori=...).
+export const CATEGORY_SLUG: Record<string, string> = {
+  Kayak: "kayak",
+  Kano: "kano",
+  "Perahu Karet": "perahu-karet",
+  SUP: "sup",
+  Lainnya: "lainnya",
+};
+
 export const CATEGORIES: {
   name: Category;
   slug: string;
-  description: string;
+  descId: string;
+  descEn: string;
   image: string;
 }[] = [
   {
-    name: "Perahu",
-    slug: "perahu",
-    description: "Kayak, kano, perahu karet & SUP",
+    name: "Kayak",
+    slug: "kayak",
+    descId: "Balap & rekreasi (K1/K2/K4)",
+    descEn: "Racing & recreation (K1/K2/K4)",
+    image: "/gambar-ls/ls-05.jpg",
+  },
+  {
+    name: "Kano",
+    slug: "kano",
+    descId: "Single, double & outrigger",
+    descEn: "Single, double & outrigger",
+    image: "/gambar-ls/ls-01.jpg",
+  },
+  {
+    name: "Perahu Karet",
+    slug: "perahu-karet",
+    descId: "LCR & perahu penyelamat",
+    descEn: "LCR & rescue boats",
     image: "/gambar-ls/ls-10.jpg",
+  },
+  {
+    name: "SUP",
+    slug: "sup",
+    descId: "Stand-up paddle board",
+    descEn: "Stand-up paddle board",
+    image: "/gambar-ls/ls-16.jpg",
   },
 ];
 

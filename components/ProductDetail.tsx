@@ -6,7 +6,13 @@ import { useMemo, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useLang } from "@/context/LanguageContext";
-import { formatIDR, stockStatus, isCallForPrice } from "@/lib/products";
+import {
+  formatIDR,
+  stockStatus,
+  isCallForPrice,
+  categoryLabel,
+  CATEGORY_SLUG,
+} from "@/lib/products";
 import { blurDataURL } from "@/lib/image";
 import { discountPercent } from "./Badge";
 import Badge from "./Badge";
@@ -123,13 +129,13 @@ export default function ProductDetail({
     <div className="container-content py-6 lg:py-10">
       {/* Breadcrumb (PRD 6.3) */}
       <nav className="mb-6 flex items-center gap-1.5 text-sm text-slate-500">
-        <Link href="/" className="hover:text-brand-600">Beranda</Link>
+        <Link href="/" className="hover:text-brand-600">{t("common.home")}</Link>
         <ChevronRight width={14} height={14} />
         <Link
-          href={`/katalog?kategori=${product.category.toLowerCase()}`}
+          href={`/katalog?kategori=${CATEGORY_SLUG[product.category] ?? ""}`}
           className="hover:text-brand-600"
         >
-          {product.category}
+          {categoryLabel(product.category, lang)}
         </Link>
         <ChevronRight width={14} height={14} />
         <span className="truncate font-medium text-slate-700">{product.name}</span>
@@ -196,7 +202,7 @@ export default function ProductDetail({
           </div>
 
           <p className="mt-3 text-sm font-medium uppercase tracking-wide text-slate-400">
-            {product.category}
+            {categoryLabel(product.category, lang)}
           </p>
           <h1 className="mt-1 text-3xl font-extrabold text-slate-900 sm:text-4xl">
             {product.name}
@@ -445,7 +451,7 @@ export default function ProductDetail({
                 <CloseIcon />
               </button>
             </div>
-            <SizeGuide category={product.category} />
+            <SizeGuide />
             <p className="mt-4 text-xs text-slate-500">
               Ukuran dapat bervariasi ±1-2cm. Ragu memilih ukuran? Chat CS kami.
             </p>
@@ -456,36 +462,7 @@ export default function ProductDetail({
   );
 }
 
-function SizeGuide({ category }: { category: Product["category"] }) {
-  if (category === "Sepatu") {
-    const rows = [
-      ["39", "24.5"],
-      ["40", "25.0"],
-      ["41", "26.0"],
-      ["42", "26.5"],
-      ["43", "27.5"],
-      ["44", "28.0"],
-    ];
-    return (
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 text-left text-slate-500">
-            <th className="py-2">Ukuran (EU)</th>
-            <th className="py-2">Panjang Kaki (cm)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(([s, cm]) => (
-            <tr key={s} className="border-b border-slate-100">
-              <td className="py-2 font-medium text-slate-800">{s}</td>
-              <td className="py-2 text-slate-600">{cm}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  }
-
+function SizeGuide() {
   const rows = [
     ["S", "92-96", "66"],
     ["M", "97-101", "68"],
