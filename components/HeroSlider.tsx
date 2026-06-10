@@ -41,7 +41,7 @@ const SLIDES: Slide[] = [
     eyebrow: "hero.2.eyebrow",
     title: "hero.2.title",
     subtitle: "hero.2.subtitle",
-    cta: { label: "hero.2.cta", href: "/katalog" },
+    cta: { label: "hero.2.cta", href: "/produk/luck-sport-kayak-single-k1-carbon-fiber" },
   },
   {
     type: "video",

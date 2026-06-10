@@ -17,6 +17,7 @@ export interface Product {
   category: Category;
   description: string;
   description_en?: string; // deskripsi versi English (opsional)
+  model3d?: string; // URL file model 3D (.glb) untuk 3D viewer (opsional)
   price: number;
   price_original: number | null;
   images: string[];

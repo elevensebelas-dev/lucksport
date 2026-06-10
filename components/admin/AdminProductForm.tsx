@@ -29,6 +29,7 @@ interface FormState {
   name: string;
   category: Category;
   description: string;
+  model3d: string;
   price: string;
   price_original: string;
   images: string[];
@@ -42,6 +43,7 @@ function toState(p?: Product): FormState {
     name: p?.name ?? "",
     category: p?.category ?? "Kayak",
     description: p?.description ?? "",
+    model3d: p?.model3d ?? "",
     price: p ? String(p.price) : "",
     price_original: p?.price_original != null ? String(p.price_original) : "",
     images: p?.images ?? [],
@@ -67,9 +69,31 @@ export default function AdminProductForm({ initial, onSaved, onCancel }: Props) 
   const [bulkColors, setBulkColors] = useState("");
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const modelRef = useRef<HTMLInputElement>(null);
+  const [uploadingModel, setUploadingModel] = useState(false);
 
   function patch(p: Partial<FormState>) {
     setForm((f) => ({ ...f, ...p }));
+  }
+
+  // ── Upload model 3D (.glb/.gltf) ──
+  async function uploadModel(file: File | null | undefined) {
+    if (!file) return;
+    setUploadingModel(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal mengunggah model 3D.");
+      patch({ model3d: data.url });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Gagal mengunggah model.");
+    } finally {
+      setUploadingModel(false);
+      if (modelRef.current) modelRef.current.value = "";
+    }
   }
 
   // ── Upload foto ──
@@ -203,6 +227,7 @@ export default function AdminProductForm({ initial, onSaved, onCancel }: Props) 
       name: form.name,
       category: form.category,
       description: form.description,
+      model3d: form.model3d,
       price: Number(form.price),
       price_original: form.price_original ? Number(form.price_original) : null,
       images: form.images,
@@ -424,6 +449,52 @@ export default function AdminProductForm({ initial, onSaved, onCancel }: Props) 
           <button type="button" onClick={addUrl} className="btn-outline whitespace-nowrap px-3 py-2 text-sm">
             Tambah URL
           </button>
+        </div>
+      </div>
+
+      {/* Model 3D */}
+      <div>
+        <label className={label}>Model 3D (.glb / .gltf) — opsional</label>
+        <div className="rounded-xl border-2 border-dashed border-slate-300 p-4">
+          {form.model3d ? (
+            <div className="flex items-center justify-between gap-3">
+              <span className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="flex-shrink-0 text-brand-600">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                </svg>
+                <span className="truncate">{form.model3d.split("/").pop()}</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => patch({ model3d: "" })}
+                className="flex-shrink-0 text-sm font-medium text-red-500 hover:text-red-600"
+              >
+                Hapus
+              </button>
+            </div>
+          ) : (
+            <div className="text-center">
+              <input
+                ref={modelRef}
+                type="file"
+                accept=".glb,.gltf,model/gltf-binary,model/gltf+json"
+                className="hidden"
+                onChange={(e) => uploadModel(e.target.files?.[0])}
+              />
+              <button
+                type="button"
+                onClick={() => modelRef.current?.click()}
+                disabled={uploadingModel}
+                className="btn-outline px-4 py-2 text-sm"
+              >
+                {uploadingModel ? "Mengunggah…" : "Unggah Model 3D"}
+              </button>
+              <p className="mt-2 text-xs text-slate-500">
+                Format .glb/.gltf, maks 40MB. Tampil sebagai 3D viewer interaktif
+                di halaman produk.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

@@ -103,6 +103,8 @@ export interface ProductInput {
   name: string;
   category: Category;
   description: string;
+  description_en?: string;
+  model3d?: string;
   price: number;
   price_original?: number | null;
   images: string[];
@@ -172,12 +174,17 @@ export function validateInput(input: Partial<ProductInput>): {
     BADGES_VALID.includes(b)
   );
 
+  const model3d = (input.model3d ?? "").toString().trim() || undefined;
+  const description_en = (input.description_en ?? "").toString().trim() || undefined;
+
   return {
     ok: true,
     value: {
       name,
       category,
       description: (input.description ?? "").toString().trim(),
+      description_en,
+      model3d,
       price,
       price_original,
       images,
@@ -199,6 +206,8 @@ export function createProduct(input: ProductInput): Product {
     name: input.name,
     category: input.category,
     description: input.description,
+    description_en: input.description_en,
+    model3d: input.model3d,
     price: input.price,
     price_original: input.price_original ?? null,
     images: input.images,
@@ -230,6 +239,8 @@ export function updateProduct(
         : prev.slug,
     category: input.category,
     description: input.description,
+    description_en: input.description_en,
+    model3d: input.model3d,
     price: input.price,
     price_original: input.price_original ?? null,
     images: input.images,

@@ -18,6 +18,10 @@ import { discountPercent } from "./Badge";
 import Badge from "./Badge";
 import { RatingDisplay } from "./RatingStars";
 import RestockForm from "./RestockForm";
+import dynamic from "next/dynamic";
+
+// 3D viewer dimuat hanya di client & saat dibutuhkan (lazy).
+const ModelViewer3D = dynamic(() => import("./ModelViewer3D"), { ssr: false });
 import { waBuyProduct, waNotifyStock, waInquiry } from "@/lib/whatsapp";
 import {
   CartIcon,
@@ -28,6 +32,7 @@ import {
   ChevronRight,
   HeartIcon,
   HeartFilledIcon,
+  CubeIcon,
 } from "./Icons";
 import type { Product } from "@/lib/types";
 
@@ -65,6 +70,7 @@ export default function ProductDetail({
   );
 
   const [activeImage, setActiveImage] = useState(0);
+  const [view3d, setView3d] = useState(false);
   const [color, setColor] = useState(colors[0]);
   const [size, setSize] = useState<string | null>(
     sizes.length === 1 ? sizes[0] : null
@@ -92,6 +98,9 @@ export default function ProductDetail({
 
   const soldOut = product.variants.every((v) => v.stock === 0);
   const callCS = isCallForPrice(product);
+  // Setiap produk punya 3D viewer; pakai model produk bila ada, jika tidak
+  // pakai model contoh (placeholder) agar fitur tetap dapat dicoba.
+  const model3dSrc = product.model3d ?? "/models/sample.glb";
 
   function handleAdd() {
     if (!size) {
@@ -142,35 +151,71 @@ export default function ProductDetail({
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-        {/* ── Galeri foto (focal point, PRD 5.3.1) ── */}
+        {/* ── Galeri foto / 3D (focal point, PRD 5.3.1) ── */}
         <div>
+          {/* Toggle Foto / 3D */}
+          <div className="mb-3 inline-flex rounded-lg border border-slate-200 p-0.5 text-sm font-semibold">
+            <button
+              onClick={() => setView3d(false)}
+              aria-pressed={!view3d}
+              className={`rounded-md px-3 py-1.5 transition-colors ${
+                !view3d ? "bg-brand-600 text-white" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              {t("pd.viewPhotos")}
+            </button>
+            <button
+              onClick={() => setView3d(true)}
+              aria-pressed={view3d}
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors ${
+                view3d ? "bg-brand-600 text-white" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <CubeIcon width={16} height={16} /> {t("pd.view3d")}
+            </button>
+          </div>
+
           <div
             className="relative aspect-square overflow-hidden rounded-xl bg-slate-100"
-            onMouseEnter={() => setZoom(true)}
+            onMouseEnter={() => !view3d && setZoom(true)}
             onMouseLeave={() => setZoom(false)}
-            onMouseMove={onMouseMove}
+            onMouseMove={view3d ? undefined : onMouseMove}
           >
-            <Image
-              src={product.images[activeImage]}
-              alt={`${product.name} - foto ${activeImage + 1}`}
-              fill
-              priority
-              placeholder="blur"
-              blurDataURL={blurDataURL}
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className={`object-cover transition-transform duration-200 ${
-                zoom ? "scale-150" : "scale-100"
-              }`}
-              style={
-                zoom
-                  ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` }
-                  : undefined
-              }
-            />
-            <span className="absolute right-3 top-3 hidden items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-600 lg:flex">
-              <ZoomIcon width={14} height={14} /> Arahkan untuk zoom
-            </span>
+            {view3d ? (
+              <ModelViewer3D
+                src={model3dSrc}
+                alt={product.name}
+                poster={product.images[0]}
+              />
+            ) : (
+              <>
+                <Image
+                  src={product.images[activeImage]}
+                  alt={`${product.name} - foto ${activeImage + 1}`}
+                  fill
+                  priority
+                  placeholder="blur"
+                  blurDataURL={blurDataURL}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className={`object-cover transition-transform duration-200 ${
+                    zoom ? "scale-150" : "scale-100"
+                  }`}
+                  style={
+                    zoom
+                      ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` }
+                      : undefined
+                  }
+                />
+                <span className="absolute right-3 top-3 hidden items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-600 lg:flex">
+                  <ZoomIcon width={14} height={14} /> Arahkan untuk zoom
+                </span>
+              </>
+            )}
           </div>
+
+          {view3d && (
+            <p className="mt-2 text-xs text-slate-400">{t("pd.model3dNote")}</p>
+          )}
 
           {/* Thumbnails */}
           {product.images.length > 1 && (
@@ -178,9 +223,12 @@ export default function ProductDetail({
               {product.images.map((src, i) => (
                 <button
                   key={i}
-                  onClick={() => setActiveImage(i)}
+                  onClick={() => {
+                    setActiveImage(i);
+                    setView3d(false);
+                  }}
                   className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
-                    i === activeImage
+                    i === activeImage && !view3d
                       ? "border-brand-600"
                       : "border-transparent hover:border-slate-300"
                   }`}
