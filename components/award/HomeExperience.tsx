@@ -291,9 +291,9 @@ export default function HomeExperience({ products }: { products: Product[] }) {
 
       {/* ════════ KOLEKSI — galeri horizontal ════════ */}
       <section ref={horizRef} className="relative bg-[#0c2a40]">
-        <div className="flex h-auto flex-col justify-center py-20 lg:h-screen lg:py-0">
+        <div className="flex h-auto flex-col justify-center py-20 lg:h-screen lg:pb-16 lg:pt-28">
           <div className="container-content mb-10 flex items-end justify-between">
-            <h2 data-reveal className="font-display text-4xl text-white sm:text-6xl">
+            <h2 data-reveal className="font-display text-3xl text-white sm:text-5xl">
               {t("award.products.title")}
             </h2>
             <p className="hidden text-sm uppercase tracking-[0.25em] text-white/40 lg:block">
