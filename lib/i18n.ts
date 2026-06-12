@@ -177,7 +177,7 @@ const id: Dict = {
   "award.hero.cta2": "Hubungi Kami",
   "award.scroll": "Gulir",
   "award.manifesto":
-    "Setiap lekuk lambung lahir dari tangan. Setiap kayuhan adalah dialog dengan air. Kami membangun perahu untuk mereka yang menyambut pagi.",
+    "Setiap lekuk lambung lahir dari tangan. Setiap kayuhan adalah dialog dengan air. Kami menempa perahu bagi mereka yang berani memecah riak, menaklukkan jarak, dan menyongsong fajar.",
   "award.craft1.title": "Serat Karbon, Sentuhan Tangan",
   "award.craft1.desc":
     "Material aerospace dibentuk perajin lokal — ringan untuk balapan, kuat untuk bertahun-tahun di air.",
@@ -355,7 +355,7 @@ const en: Dict = {
   "award.hero.cta2": "Talk to Us",
   "award.scroll": "Scroll",
   "award.manifesto":
-    "Every hull is shaped by hand. Every stroke is a dialogue with water. We build boats for those who greet the morning.",
+    "Every hull is shaped by hand. Every stroke is a dialogue with water. We forge boats for those who dare to break the ripples, conquer the distance, and chase the dawn.",
   "award.craft1.title": "Carbon Fiber, Human Touch",
   "award.craft1.desc":
     "Aerospace materials shaped by local artisans — light enough to race, strong enough for years on the water.",
