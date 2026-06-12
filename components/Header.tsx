@@ -39,6 +39,20 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
 
+  // Di homepage, header melayang transparan di atas hero (adegan danau),
+  // lalu menjadi solid setelah pengguna scroll melewati ~70% tinggi layar.
+  const onHome = pathname === "/";
+  const [pastHero, setPastHero] = useState(false);
+  useEffect(() => {
+    if (!onHome) return;
+    const onScroll = () =>
+      setPastHero(window.scrollY > window.innerHeight * 0.7);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [onHome]);
+  const solid = !onHome || pastHero;
+
   // Tutup menu mobile saat pindah halaman.
   useEffect(() => {
     setMobileOpen(false);
@@ -54,18 +68,26 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <header
+        className={`top-0 z-40 transition-colors duration-300 ${
+          onHome ? "fixed inset-x-0" : "sticky"
+        } ${
+          solid
+            ? "border-b border-slate-200 bg-white/95 backdrop-blur"
+            : "border-b border-transparent bg-transparent"
+        }`}
+      >
       <div className="container-content flex h-16 items-center gap-4">
         {/* Mobile: hamburger */}
         <button
-          className="text-slate-700 lg:hidden"
+          className={`lg:hidden ${solid ? "text-slate-700" : "text-white"}`}
           onClick={() => setMobileOpen(true)}
           aria-label="Buka menu"
         >
           <MenuIcon />
         </button>
 
-        <Logo />
+        <Logo className={solid ? "" : "brightness-0 invert"} />
 
         {/* Desktop nav */}
         <nav className="ml-6 hidden items-center gap-6 lg:flex">
@@ -75,8 +97,10 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition-colors hover:text-brand-600 ${
-                  active ? "text-brand-600" : "text-slate-700"
+                className={`text-sm font-medium transition-colors ${
+                  solid
+                    ? `hover:text-brand-600 ${active ? "text-brand-600" : "text-slate-700"}`
+                    : "text-white/85 hover:text-white"
                 }`}
               >
                 {t(item.key)}
@@ -92,7 +116,9 @@ export default function Header() {
 
           {/* Mobile search toggle */}
           <button
-            className="p-2 text-slate-700 hover:text-brand-600 md:hidden"
+            className={`p-2 md:hidden ${
+              solid ? "text-slate-700 hover:text-brand-600" : "text-white"
+            }`}
             onClick={() => setSearchOpen((v) => !v)}
             aria-label="Cari produk"
           >
@@ -100,7 +126,7 @@ export default function Header() {
           </button>
 
           {/* Language switcher */}
-          <LanguageSwitcher className="hidden sm:inline-flex" />
+          <LanguageSwitcher className="hidden sm:inline-flex" dark={!solid} />
 
           {/* Chatbot button */}
           <button
@@ -114,7 +140,9 @@ export default function Header() {
           {/* Wishlist */}
           <Link
             href="/wishlist"
-            className="relative p-2 text-slate-700 hover:text-brand-600"
+            className={`relative p-2 ${
+              solid ? "text-slate-700 hover:text-brand-600" : "text-white hover:text-amber-200"
+            }`}
             aria-label={`Favorit, ${wishCount} item`}
           >
             <HeartIcon width={24} height={24} />
@@ -128,7 +156,9 @@ export default function Header() {
           {/* Cart */}
           <button
             onClick={openCart}
-            className="relative p-2 text-slate-700 hover:text-brand-600"
+            className={`relative p-2 ${
+              solid ? "text-slate-700 hover:text-brand-600" : "text-white hover:text-amber-200"
+            }`}
             aria-label={`Keranjang, ${count} item`}
           >
             <CartIcon width={24} height={24} />

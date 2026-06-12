@@ -166,6 +166,36 @@ const id: Dict = {
   "bot.found": "Ini yang saya temukan: 👇",
   "bot.notFound": "Hmm, saya belum menemukan produk itu. Mau lihat katalog lengkap atau terhubung ke CS?",
   "bot.searchError": "Maaf, pencarian sedang bermasalah. Coba hubungi CS ya 🙏",
+
+  // Award homepage experience
+  "award.hero.eyebrow": "Danau Jatiluhur · Purwakarta",
+  "award.hero.title1": "Mengalun di",
+  "award.hero.title2": "Atas Air",
+  "award.hero.sub":
+    "Kayak, kano, dan perahu buatan tangan — untuk pagi yang tenang di Danau Jatiluhur.",
+  "award.hero.cta": "Jelajahi Koleksi",
+  "award.hero.cta2": "Hubungi Kami",
+  "award.scroll": "Gulir",
+  "award.manifesto":
+    "Setiap lekuk lambung lahir dari tangan. Setiap kayuhan adalah dialog dengan air. Kami membangun perahu untuk mereka yang menyambut pagi.",
+  "award.craft1.title": "Serat Karbon, Sentuhan Tangan",
+  "award.craft1.desc":
+    "Material aerospace dibentuk perajin lokal — ringan untuk balapan, kuat untuk bertahun-tahun di air.",
+  "award.craft2.title": "Dari Danau, untuk Juara",
+  "award.craft2.desc":
+    "Diuji pendayung nasional di danau Indonesia. Dari latihan pertama hingga garis finis.",
+  "award.products.title": "Koleksi",
+  "award.products.sub": "Geser untuk menjelajah",
+  "award.categories.title": "Jelajah Kategori",
+  "award.stats.products": "Produk",
+  "award.stats.categories": "Kategori",
+  "award.stats.handmade": "Buatan Indonesia",
+  "award.stats.assist": "Asisten Online",
+  "award.cta.title": "Siap Turun ke Air?",
+  "award.cta.sub":
+    "Ceritakan kebutuhanmu — tim kami siap merekomendasikan perahu yang tepat.",
+  "award.cta.btn": "Lihat Katalog",
+  "award.cta.wa": "Chat WhatsApp",
 };
 
 const en: Dict = {
@@ -314,6 +344,36 @@ const en: Dict = {
   "bot.found": "Here's what I found: 👇",
   "bot.notFound": "Hmm, I couldn't find that product. Want to see the full catalog or reach CS?",
   "bot.searchError": "Sorry, search is having issues. Please contact CS 🙏",
+
+  // Award homepage experience
+  "award.hero.eyebrow": "Lake Jatiluhur · Purwakarta",
+  "award.hero.title1": "Glide Across",
+  "award.hero.title2": "Still Waters",
+  "award.hero.sub":
+    "Handcrafted kayaks, canoes, and boats — for serene mornings on Lake Jatiluhur.",
+  "award.hero.cta": "Explore Collection",
+  "award.hero.cta2": "Talk to Us",
+  "award.scroll": "Scroll",
+  "award.manifesto":
+    "Every hull is shaped by hand. Every stroke is a dialogue with water. We build boats for those who greet the morning.",
+  "award.craft1.title": "Carbon Fiber, Human Touch",
+  "award.craft1.desc":
+    "Aerospace materials shaped by local artisans — light enough to race, strong enough for years on the water.",
+  "award.craft2.title": "From the Lake, for Champions",
+  "award.craft2.desc":
+    "Tested by national paddlers on Indonesian lakes. From first training to the finish line.",
+  "award.products.title": "The Collection",
+  "award.products.sub": "Drag to explore",
+  "award.categories.title": "Browse Categories",
+  "award.stats.products": "Products",
+  "award.stats.categories": "Categories",
+  "award.stats.handmade": "Made in Indonesia",
+  "award.stats.assist": "Assistant Online",
+  "award.cta.title": "Ready to Hit the Water?",
+  "award.cta.sub":
+    "Tell us what you need — our team will recommend the right boat.",
+  "award.cta.btn": "View Catalog",
+  "award.cta.wa": "Chat WhatsApp",
 };
 
 export const DICT: Record<Lang, Dict> = { id, en };
