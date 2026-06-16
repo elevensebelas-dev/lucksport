@@ -9,7 +9,10 @@ import {
 } from "react";
 import { DEFAULT_LANG, translate, type Lang } from "@/lib/i18n";
 
-const STORAGE_KEY = "lucksport_lang";
+// Cookie bahasa: sumber kebenaran tunggal, bisa dibaca server (SSR) maupun
+// middleware. Nilai awal datang dari server via prop initialLang.
+const LANG_COOKIE = "lucksport_lang";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 hari
 
 interface LangContextValue {
   lang: Lang;
@@ -20,26 +23,20 @@ interface LangContextValue {
 
 const LangContext = createContext<LangContextValue | null>(null);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
+export function LanguageProvider({
+  children,
+  initialLang = DEFAULT_LANG,
+}: {
+  children: ReactNode;
+  initialLang?: Lang;
+}) {
+  // Mulai dari bahasa yang sudah ditentukan server → render client cocok
+  // dengan HTML server (tanpa kedipan, tanpa hydration mismatch).
+  const [lang, setLangState] = useState<Lang>(initialLang);
 
-  // Muat preferensi bahasa.
+  // Persist pilihan ke cookie + sinkron atribut <html lang> setiap berubah.
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
-      if (saved === "id" || saved === "en") setLangState(saved);
-    } catch {
-      /* abaikan */
-    }
-  }, []);
-
-  // Simpan + update atribut <html lang>.
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, lang);
-    } catch {
-      /* abaikan */
-    }
+    document.cookie = `${LANG_COOKIE}=${lang}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`;
     document.documentElement.lang = lang;
   }, [lang]);
 

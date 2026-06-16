@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
@@ -7,6 +8,7 @@ import { OrdersProvider } from "@/context/OrdersContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import Analytics from "@/components/Analytics";
 import { STORE } from "@/lib/config";
+import { DEFAULT_LANG, type Lang } from "@/lib/i18n";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -57,15 +59,20 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Bahasa efektif ditentukan middleware (pilihan tersimpan / deteksi negara)
+  // dan diteruskan lewat header — dipakai agar SSR langsung benar tanpa kedipan.
+  const lang: Lang =
+    (await headers()).get("x-lucksport-lang") === "en" ? "en" : DEFAULT_LANG;
+
   return (
-    <html lang="id" className={`${poppins.variable} ${fraunces.variable}`}>
+    <html lang={lang} className={`${poppins.variable} ${fraunces.variable}`}>
       <body>
-        <LanguageProvider>
+        <LanguageProvider initialLang={lang}>
           <CartProvider>
             <WishlistProvider>
               <OrdersProvider>{children}</OrdersProvider>
