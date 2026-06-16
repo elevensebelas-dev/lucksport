@@ -25,11 +25,14 @@ function ensureFile(): void {
 }
 
 export function readAll(): Product[] {
-  ensureFile();
+  // Baca TANPA pernah menulis: di platform serverless read-only (Vercel)
+  // file ini tak ada & tak bisa dibuat. Bila tak ada / gagal dibaca →
+  // pakai katalog awal (SEED) sebagai sumber data storefront.
   try {
+    if (!fs.existsSync(FILE)) return [...SEED];
     const raw = fs.readFileSync(FILE, "utf-8");
     const list = JSON.parse(raw) as Product[];
-    return Array.isArray(list) ? list : [];
+    return Array.isArray(list) ? list : [...SEED];
   } catch {
     return [...SEED];
   }
