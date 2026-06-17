@@ -202,7 +202,9 @@ export default function HomeExperience({ products }: { products: Product[] }) {
           </p>
           <h1 className="mt-6 font-display text-[13vw] font-medium leading-[0.95] sm:text-7xl lg:text-8xl">
             <span className="block overflow-hidden">
-              <span className="hero-word inline-block">{t("award.hero.title1")}</span>
+              <span className="hero-word inline-block bg-gradient-to-r from-amber-100 via-yellow-200 to-sky-300 bg-clip-text text-transparent">
+                {t("award.hero.title1")}
+              </span>
             </span>
             <span className="block overflow-hidden">
               <span className="hero-word inline-block bg-gradient-to-r from-amber-100 via-yellow-200 to-sky-300 bg-clip-text italic text-transparent">
