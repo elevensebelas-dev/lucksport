@@ -227,8 +227,8 @@ export default function LakeScene({ className = "" }: { className?: string }) {
       }
 
       // ── Tim dayung: tiga kayak berlatih ──
-      // Perahu (hull), dayung, dan pendayung semuanya putih.
-      const silhouette = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      // Perahu (hull), dayung, dan pendayung semuanya biru terang.
+      const silhouette = new THREE.MeshBasicMaterial({ color: 0x2ea8ff });
       const paddler = silhouette;
       const makeKayak = () => {
         const g = new THREE.Group();
