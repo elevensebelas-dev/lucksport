@@ -12,8 +12,10 @@ function ensureFile() {
 }
 
 export function readRestock(): RestockRequest[] {
-  ensureFile();
+  // Baca tanpa menulis: di serverless read-only (Vercel) file tak ada &
+  // tak bisa dibuat. Bila absen/gagal → daftar kosong.
   try {
+    if (!fs.existsSync(FILE)) return [];
     const list = JSON.parse(fs.readFileSync(FILE, "utf-8"));
     return Array.isArray(list) ? list : [];
   } catch {
