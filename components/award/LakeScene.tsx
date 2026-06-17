@@ -227,7 +227,9 @@ export default function LakeScene({ className = "" }: { className?: string }) {
       }
 
       // ── Tim dayung: tiga kayak berlatih ──
-      const silhouette = new THREE.MeshBasicMaterial({ color: 0x21384b });
+      // Perahu (hull), dayung, dan pendayung semuanya putih.
+      const silhouette = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const paddler = silhouette;
       const makeKayak = () => {
         const g = new THREE.Group();
         const hull = new THREE.Mesh(
@@ -239,11 +241,11 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         g.add(hull);
         const torso = new THREE.Mesh(
           new THREE.CylinderGeometry(0.15, 0.21, 0.66, 10),
-          silhouette
+          paddler
         );
         torso.position.set(0.08, 0.52, 0);
         g.add(torso);
-        const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), silhouette);
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), paddler);
         head.position.set(0.08, 1.0, 0);
         g.add(head);
         const paddle = new THREE.Mesh(
