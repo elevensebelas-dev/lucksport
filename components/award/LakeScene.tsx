@@ -3,16 +3,21 @@
 import { useEffect, useRef } from "react";
 
 // ─────────────────────────────────────────────────────────────────────────
-// LakeScene — siang hari cerah di Danau Jatiluhur (Purwakarta), Three.js:
-// matahari tinggi, langit biru terang, air ber-shader biru dengan jalur
-// cahaya putih, TIGA kayak pendayung sedang berlatih, burung melintas,
-// dan siluet keramba jaring apung di kejauhan.
+// LakeScene — danau Jatiluhur (Purwakarta) sinematik, Three.js:
+// pencahayaan nyata (matahari + langit) sehingga kayak & pendayung
+// ber-shading dimensional, lambung 3D dengan kokpit & dayung, PANTULAN
+// kayak di air, bayangan kontak, kabut kedalaman, burung melintas, keramba
+// jaring apung, dan GERAK KAMERA sinematik yang melayang pelan.
 // Client-only; pause saat di luar layar; hormati prefers-reduced-motion;
 // fallback gradien CSS bila WebGL tak tersedia.
 // ─────────────────────────────────────────────────────────────────────────
 
 const FALLBACK_BG =
   "linear-gradient(to bottom, #2a7fd0 0%, #4f9ad8 32%, #7fb8e6 55%, #aed4f0 75%, #d6ecf8 90%, #1d6aa0 100%)";
+
+const HULL_COLOR = 0x2ea8ff; // biru terang (sesuai preferensi)
+const PADDLER_COLOR = 0x5bbdff; // biru terang sedikit lebih muda
+const BLADE_COLOR = 0xeaf6ff;
 
 export default function LakeScene({ className = "" }: { className?: string }) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -51,21 +56,26 @@ export default function LakeScene({ className = "" }: { className?: string }) {
 
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setSize(host.clientWidth, host.clientHeight);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.08;
       host.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
+      // Kabut kedalaman → objek jauh berbaur dengan kabut horizon.
+      scene.fog = new THREE.Fog(0xcfe6f5, 40, 280);
 
-      // ── Langit pagi (gradient via CanvasTexture) ──
+      // ── Langit siang (gradient via CanvasTexture) ──
       const skyCanvas = document.createElement("canvas");
       skyCanvas.width = 16;
       skyCanvas.height = 1024;
       const ctx = skyCanvas.getContext("2d")!;
       const grad = ctx.createLinearGradient(0, 0, 0, 1024);
-      grad.addColorStop(0.0, "#1f6fc4"); // biru langit siang di puncak
-      grad.addColorStop(0.35, "#4f9ad8"); // biru cerah
-      grad.addColorStop(0.58, "#7fb8e6"); // biru muda
-      grad.addColorStop(0.74, "#aed4f0"); // biru pucat
-      grad.addColorStop(0.85, "#d6ecf8"); // kabut terang di horizon
+      grad.addColorStop(0.0, "#1f6fc4");
+      grad.addColorStop(0.35, "#4f9ad8");
+      grad.addColorStop(0.58, "#7fb8e6");
+      grad.addColorStop(0.74, "#aed4f0");
+      grad.addColorStop(0.85, "#d6ecf8");
       grad.addColorStop(1.0, "#eaf6fd");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 16, 1024);
@@ -79,13 +89,25 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         0.1,
         600
       );
-      camera.position.set(0, 2.4, 9);
-      camera.lookAt(0, 1.6, -60);
+      const CAM_BASE = new THREE.Vector3(0, 2.4, 9);
+      camera.position.copy(CAM_BASE);
+      const camTarget = new THREE.Vector3(0, 1.5, -60);
+      camera.lookAt(camTarget);
 
-      // ── Matahari siang tinggi + halo terang ──
+      // ── Pencahayaan ──
+      const hemi = new THREE.HemisphereLight(0xdfeeff, 0x21556e, 1.05);
+      scene.add(hemi);
+      const sunLight = new THREE.DirectionalLight(0xfff1d6, 1.55);
+      sunLight.position.set(9, 16, 10); // dari kanan-atas, depan
+      scene.add(sunLight);
+      const rim = new THREE.DirectionalLight(0xbfe0ff, 0.5);
+      rim.position.set(-8, 6, -10); // cahaya tepi dari belakang
+      scene.add(rim);
+
+      // ── Matahari + halo ──
       const sun = new THREE.Mesh(
         new THREE.CircleGeometry(5, 48),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
+        new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false })
       );
       sun.position.set(7, 24, -200);
       scene.add(sun);
@@ -105,9 +127,10 @@ export default function LakeScene({ className = "" }: { className?: string }) {
           map: glowTex,
           transparent: true,
           depthWrite: false,
+          fog: false,
         })
       );
-      glow.scale.set(75, 75, 1);
+      glow.scale.set(80, 80, 1);
       glow.position.copy(sun.position);
       scene.add(glow);
 
@@ -137,18 +160,20 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         mesh.position.set(0, 0, z);
         return mesh;
       };
-      scene.add(makeRidge(-202, 11, 5.5, 0x8fb6d6, 1.3)); // bukit jauh, biru kabut terang
-      scene.add(makeRidge(-178, 7.5, 4, 0x4f9460, 4.1)); // bukit dekat, hijau sinar siang
+      scene.add(makeRidge(-202, 11, 5.5, 0x8fb6d6, 1.3));
+      scene.add(makeRidge(-178, 7.5, 4, 0x4f9460, 4.1));
 
-      // ── Air danau pagi (shader kustom) ──
+      // ── Air danau (shader kustom: gradasi kedalaman, pantulan matahari,
+      //    kilau spekular, Fresnel langit) ──
       const uniforms = {
         uTime: { value: 0 },
-        uDeep: { value: new THREE.Color("#1c6aa3") },
-        uHorizon: { value: new THREE.Color("#c4e4f4") },
+        uDeep: { value: new THREE.Color("#155f93") },
+        uHorizon: { value: new THREE.Color("#cfe6f5") },
         uSun: { value: new THREE.Color("#ffffff") },
+        uSky: { value: new THREE.Color("#bfe0ff") },
       };
       const water = new THREE.Mesh(
-        new THREE.PlaneGeometry(420, 240, 140, 90),
+        new THREE.PlaneGeometry(440, 260, 180, 120),
         new THREE.ShaderMaterial({
           uniforms,
           vertexShader: /* glsl */ `
@@ -168,7 +193,7 @@ export default function LakeScene({ className = "" }: { className?: string }) {
           `,
           fragmentShader: /* glsl */ `
             uniform float uTime;
-            uniform vec3 uDeep, uHorizon, uSun;
+            uniform vec3 uDeep, uHorizon, uSun, uSky;
             varying vec3 vWorld;
             float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
             float noise(vec2 p){
@@ -181,15 +206,19 @@ export default function LakeScene({ className = "" }: { className?: string }) {
             }
             void main() {
               float dist = clamp(-vWorld.z / 150.0, 0.0, 1.0);
-              vec3 col = mix(uDeep, uHorizon, pow(dist, 1.9));
-              // pantulan matahari siang (digeser mengikuti posisi matahari)
+              vec3 col = mix(uDeep, uHorizon, pow(dist, 1.8));
+              // Fresnel: makin jauh makin memantulkan warna langit.
+              col = mix(col, uSky, pow(dist, 2.4) * 0.5);
+              // Pantulan matahari (jalur cahaya mengikuti posisi matahari).
               float streak = exp(-pow((vWorld.x - 7.0 * dist) / (2.0 + dist * 9.0), 2.0));
               float shimmer = noise(vec2(vWorld.x * 2.2, vWorld.z * 0.55 - uTime * 1.1));
-              shimmer = smoothstep(0.45, 0.95, shimmer);
-              col += uSun * streak * shimmer * (0.18 + 0.85 * dist);
-              // kilau halus
-              float sp = pow(noise(vWorld.xz * 3.0 + uTime * 0.6), 22.0);
-              col += vec3(1.0, 0.93, 0.75) * sp * 0.4 * dist;
+              shimmer = smoothstep(0.4, 0.96, shimmer);
+              col += uSun * streak * shimmer * (0.22 + 0.95 * dist);
+              // Kilau spekular halus tersebar.
+              float sp = pow(noise(vWorld.xz * 3.0 + uTime * 0.6), 24.0);
+              col += vec3(1.0, 0.97, 0.85) * sp * 0.5 * dist;
+              float sp2 = pow(noise(vWorld.xz * 6.0 - uTime * 0.9), 30.0);
+              col += vec3(1.0) * sp2 * 0.35;
               gl_FragColor = vec4(col, 1.0);
             }
           `,
@@ -199,86 +228,174 @@ export default function LakeScene({ className = "" }: { className?: string }) {
       water.position.set(0, 0, -90);
       scene.add(water);
 
-      // ── Kabut pagi di atas air ──
-      const mistCanvas = document.createElement("canvas");
-      mistCanvas.width = 256;
-      mistCanvas.height = 64;
-      const mctx = mistCanvas.getContext("2d")!;
-      const mg = mctx.createRadialGradient(128, 32, 4, 128, 32, 128);
-      mg.addColorStop(0, "rgba(235,243,248,0.55)");
-      mg.addColorStop(1, "rgba(235,243,248,0)");
-      mctx.fillStyle = mg;
-      mctx.fillRect(0, 0, 256, 64);
-      const mistTex = new THREE.CanvasTexture(mistCanvas);
-      const mists: import("three").Sprite[] = [];
-      for (let i = 0; i < 5; i++) {
-        const m = new THREE.Sprite(
-          new THREE.SpriteMaterial({
-            map: mistTex,
+      // ── Kayak 3D detail + pantulan ──
+      const hullMat = new THREE.MeshStandardMaterial({
+        color: HULL_COLOR,
+        roughness: 0.42,
+        metalness: 0.18,
+      });
+      const deckMat = new THREE.MeshStandardMaterial({
+        color: 0x1f7fd0,
+        roughness: 0.55,
+        metalness: 0.1,
+      });
+      const paddlerMat = new THREE.MeshStandardMaterial({
+        color: PADDLER_COLOR,
+        roughness: 0.6,
+        metalness: 0.05,
+      });
+      const bladeMat = new THREE.MeshStandardMaterial({
+        color: BLADE_COLOR,
+        roughness: 0.5,
+        metalness: 0.1,
+      });
+      // Material pantulan (unlit, transparan, dibalik di bawah permukaan).
+      const reflMat = new THREE.MeshBasicMaterial({
+        color: HULL_COLOR,
+        transparent: true,
+        opacity: 0.16,
+        depthWrite: false,
+      });
+
+      const buildKayak = () => {
+        const g = new THREE.Group();
+
+        // Lambung canoe/kayak: spindle yang MERUNCING di kedua ujung
+        // (bow & stern) — profil radius mengecil ke nol di ujung,
+        // dibalik (lathe) lalu dipipihkan ramping.
+        const HULL_LEN = 3.95;
+        const HULL_R = 0.46;
+        const profile: import("three").Vector2[] = [];
+        const hsegs = 20;
+        for (let i = 0; i <= hsegs; i++) {
+          const tt = i / hsegs;
+          const y = (tt - 0.5) * HULL_LEN;
+          // 0 di ujung, penuh di tengah, sedikit meruncing.
+          const r = HULL_R * Math.pow(Math.sin(Math.PI * tt), 0.6);
+          profile.push(new THREE.Vector2(Math.max(r, 0.0008), y));
+        }
+        const hull = new THREE.Mesh(
+          new THREE.LatheGeometry(profile, 22),
+          hullMat
+        );
+        hull.rotation.z = Math.PI / 2; // membujur ke sumbu X
+        hull.scale.set(0.6, 1, 0.5); // pipih (tinggi) & ramping (lebar)
+        hull.position.y = 0.2;
+        g.add(hull);
+
+        // Rim kokpit (cincin) tempat pendayung duduk.
+        const rimMesh = new THREE.Mesh(
+          new THREE.TorusGeometry(0.26, 0.06, 10, 22),
+          deckMat
+        );
+        rimMesh.rotation.x = Math.PI / 2;
+        rimMesh.position.set(0.05, 0.28, 0);
+        g.add(rimMesh);
+
+        // Pendayung: torso, kepala, dua lengan.
+        const torso = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.16, 0.22, 0.66, 12),
+          paddlerMat
+        );
+        torso.position.set(0.06, 0.6, 0);
+        g.add(torso);
+        const head = new THREE.Mesh(
+          new THREE.SphereGeometry(0.16, 16, 16),
+          paddlerMat
+        );
+        head.position.set(0.06, 1.06, 0);
+        g.add(head);
+
+        const armGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.62, 8);
+        const armL = new THREE.Mesh(armGeo, paddlerMat);
+        armL.position.set(0.06, 0.72, 0.26);
+        armL.rotation.x = 0.9;
+        g.add(armL);
+        const armR = new THREE.Mesh(armGeo, paddlerMat);
+        armR.position.set(0.06, 0.72, -0.26);
+        armR.rotation.x = -0.9;
+        g.add(armR);
+
+        // Dayung: poros + dua bilah.
+        const paddle = new THREE.Group();
+        const shaft = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.035, 0.035, 2.4, 10),
+          bladeMat
+        );
+        shaft.rotation.x = Math.PI / 2;
+        paddle.add(shaft);
+        const blade = new THREE.Mesh(
+          new THREE.BoxGeometry(0.06, 0.42, 0.22),
+          bladeMat
+        );
+        blade.position.set(0, 0, 1.18);
+        paddle.add(blade);
+        const blade2 = blade.clone();
+        blade2.position.set(0, 0, -1.18);
+        paddle.add(blade2);
+        paddle.position.set(0.06, 0.74, 0);
+        g.add(paddle);
+
+        // Bayangan kontak (elips gelap lembut di permukaan air).
+        const shadow = new THREE.Mesh(
+          new THREE.CircleGeometry(1.0, 24),
+          new THREE.MeshBasicMaterial({
+            color: 0x07304a,
             transparent: true,
-            opacity: 0.16,
+            opacity: 0.22,
             depthWrite: false,
           })
         );
-        m.scale.set(55 + i * 12, 5.5, 1);
-        m.position.set((i - 2) * 22, 1.4 + (i % 3) * 0.5, -120 - i * 14);
-        mists.push(m);
-        scene.add(m);
-      }
+        shadow.rotation.x = -Math.PI / 2;
+        shadow.scale.set(2.0, 0.7, 1);
+        shadow.position.set(0, 0.04, 0);
+        g.add(shadow);
 
-      // ── Tim dayung: tiga kayak berlatih ──
-      // Perahu (hull), dayung, dan pendayung semuanya biru terang.
-      const silhouette = new THREE.MeshBasicMaterial({ color: 0x2ea8ff });
-      const paddler = silhouette;
-      const makeKayak = () => {
-        const g = new THREE.Group();
-        const hull = new THREE.Mesh(
-          new THREE.CapsuleGeometry(0.3, 3.2, 6, 12),
-          silhouette
-        );
-        hull.rotation.z = Math.PI / 2;
-        hull.scale.set(1, 1, 0.4);
-        g.add(hull);
-        const torso = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.15, 0.21, 0.66, 10),
-          paddler
-        );
-        torso.position.set(0.08, 0.52, 0);
-        g.add(torso);
-        const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), paddler);
-        head.position.set(0.08, 1.0, 0);
-        g.add(head);
-        const paddle = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.032, 0.032, 2.3, 8),
-          silhouette
-        );
-        paddle.position.set(0.08, 0.66, 0);
-        paddle.rotation.x = Math.PI / 2.3;
-        const bladeL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 10), silhouette);
-        bladeL.scale.set(0.5, 1.6, 0.18);
-        bladeL.position.set(0, 0, 1.12);
-        paddle.add(bladeL);
-        const bladeR = bladeL.clone();
-        bladeR.position.set(0, 0, -1.12);
-        paddle.add(bladeR);
-        g.add(paddle);
         return { group: g, paddle };
       };
 
-      const team = [
-        { ...makeKayak(), baseX: -5.5, z: -30, phase: 0.0, sway: 5 },
-        { ...makeKayak(), baseX: 0.8, z: -22, phase: 1.4, sway: 6 },
-        { ...makeKayak(), baseX: 5.8, z: -16, phase: 2.6, sway: 4.5 },
-      ];
-      team.forEach((k) => {
-        k.group.position.set(k.baseX, 0.15, k.z);
-        k.group.rotation.y = -0.35;
-        scene.add(k.group);
+      const buildReflection = (src: import("three").Group) => {
+        const r = src.clone();
+        r.traverse((o) => {
+          const m = o as import("three").Mesh;
+          if ((m as unknown as { isMesh?: boolean }).isMesh) m.material = reflMat;
+        });
+        r.scale.y = -1; // balik di bawah permukaan
+        return r;
+      };
+
+      type Boat = {
+        group: import("three").Group;
+        paddle: import("three").Group;
+        refl: import("three").Group;
+        baseX: number;
+        z: number;
+        phase: number;
+        sway: number;
+        yaw: number;
+      };
+
+      const team: Boat[] = [
+        { baseX: -5.5, z: -30, phase: 0.0, sway: 5, yaw: -0.35 },
+        { baseX: 0.8, z: -22, phase: 1.4, sway: 6, yaw: -0.3 },
+        { baseX: 5.8, z: -16, phase: 2.6, sway: 4.5, yaw: -0.4 },
+      ].map((cfg) => {
+        const { group, paddle } = buildKayak();
+        group.rotation.y = cfg.yaw;
+        group.position.set(cfg.baseX, 0.16, cfg.z);
+        scene.add(group);
+        const refl = buildReflection(group);
+        refl.rotation.y = cfg.yaw;
+        scene.add(refl);
+        return { group, paddle, refl, ...cfg };
       });
 
       // ── Keramba jaring apung (ciri khas Jatiluhur) di kejauhan ──
       const keramba = new THREE.Group();
-      const kerMat = new THREE.MeshBasicMaterial({ color: 0x2c5468 });
+      const kerMat = new THREE.MeshStandardMaterial({
+        color: 0x2c5468,
+        roughness: 0.8,
+      });
       for (let i = 0; i < 7; i++) {
         const k = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.18, 2.2), kerMat);
         k.position.set(
@@ -288,14 +405,17 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         );
         keramba.add(k);
         if (i % 3 === 0) {
-          const hut = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.9, 1.0), kerMat);
+          const hut = new THREE.Mesh(
+            new THREE.BoxGeometry(1.1, 0.9, 1.0),
+            kerMat
+          );
           hut.position.set(k.position.x, 0.6, k.position.z);
           keramba.add(hut);
         }
       }
       scene.add(keramba);
 
-      // ── Burung pagi melintas ──
+      // ── Burung melintas ──
       const birdCanvas = document.createElement("canvas");
       birdCanvas.width = 64;
       birdCanvas.height = 32;
@@ -309,24 +429,62 @@ export default function LakeScene({ className = "" }: { className?: string }) {
       bctx.quadraticCurveTo(44, 6, 58, 22);
       bctx.stroke();
       const birdTex = new THREE.CanvasTexture(birdCanvas);
-      const birds: { s: import("three").Sprite; v: number; y0: number; off: number }[] = [];
-      for (let i = 0; i < 4; i++) {
+      const birds: {
+        s: import("three").Sprite;
+        v: number;
+        y0: number;
+        off: number;
+      }[] = [];
+      for (let i = 0; i < 5; i++) {
         const s = new THREE.Sprite(
-          new THREE.SpriteMaterial({ map: birdTex, transparent: true, depthWrite: false })
+          new THREE.SpriteMaterial({
+            map: birdTex,
+            transparent: true,
+            depthWrite: false,
+            fog: false,
+          })
         );
         s.scale.set(2.2, 1.1, 1);
-        const y0 = 7 + (i % 3) * 1.6;
+        const y0 = 8 + (i % 3) * 1.6;
         s.position.set(-45 - i * 14, y0, -110);
         birds.push({ s, v: 2.6 + (i % 2) * 0.7, y0, off: i * 1.7 });
         scene.add(s);
       }
 
-      // ── Partikel embun pagi ──
-      const pCount = 60;
+      // ── Kabut tipis melayang di atas air ──
+      const mistCanvas = document.createElement("canvas");
+      mistCanvas.width = 256;
+      mistCanvas.height = 64;
+      const mctx = mistCanvas.getContext("2d")!;
+      const mg = mctx.createRadialGradient(128, 32, 4, 128, 32, 128);
+      mg.addColorStop(0, "rgba(235,243,248,0.5)");
+      mg.addColorStop(1, "rgba(235,243,248,0)");
+      mctx.fillStyle = mg;
+      mctx.fillRect(0, 0, 256, 64);
+      const mistTex = new THREE.CanvasTexture(mistCanvas);
+      const mists: import("three").Sprite[] = [];
+      for (let i = 0; i < 5; i++) {
+        const m = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: mistTex,
+            transparent: true,
+            opacity: 0.14,
+            depthWrite: false,
+            fog: false,
+          })
+        );
+        m.scale.set(55 + i * 12, 5.5, 1);
+        m.position.set((i - 2) * 22, 1.4 + (i % 3) * 0.5, -120 - i * 14);
+        mists.push(m);
+        scene.add(m);
+      }
+
+      // ── Partikel kilau di udara ──
+      const pCount = 70;
       const pPos = new Float32Array(pCount * 3);
       for (let i = 0; i < pCount; i++) {
         pPos[i * 3] = (Math.random() - 0.5) * 50;
-        pPos[i * 3 + 1] = 0.3 + Math.random() * 4;
+        pPos[i * 3 + 1] = 0.3 + Math.random() * 4.5;
         pPos[i * 3 + 2] = -4 - Math.random() * 70;
       }
       const pGeo = new THREE.BufferGeometry();
@@ -334,11 +492,12 @@ export default function LakeScene({ className = "" }: { className?: string }) {
       const particles = new THREE.Points(
         pGeo,
         new THREE.PointsMaterial({
-          color: 0xd7ecff,
+          color: 0xeaf6ff,
           size: 0.1,
           transparent: true,
-          opacity: 0.45,
+          opacity: 0.5,
           depthWrite: false,
+          fog: false,
         })
       );
       scene.add(particles);
@@ -352,15 +511,32 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         const t = clock.getElapsedTime();
         uniforms.uTime.value = t;
 
-        // tim dayung: kayuhan bergantian + laju bolak-balik perlahan (latihan)
+        // Gerak kamera sinematik: melayang halus + sedikit mengorbit.
+        if (!reduceMotion) {
+          camera.position.set(
+            CAM_BASE.x + Math.sin(t * 0.07) * 1.7,
+            CAM_BASE.y + Math.sin(t * 0.05) * 0.28,
+            CAM_BASE.z + Math.sin(t * 0.04) * 0.7
+          );
+          camera.lookAt(camTarget);
+        }
+
         team.forEach((k) => {
-          k.group.position.y = 0.15 + Math.sin(t * 1.15 + k.phase) * 0.05;
-          k.group.rotation.z = Math.sin(t * 0.85 + k.phase) * 0.04;
-          k.group.position.x = k.baseX + Math.sin(t * 0.07 + k.phase) * k.sway;
+          const bob = Math.sin(t * 1.15 + k.phase) * 0.05;
+          const roll = Math.sin(t * 0.85 + k.phase) * 0.045;
+          const x = k.baseX + Math.sin(t * 0.07 + k.phase) * k.sway;
+          k.group.position.set(x, 0.16 + bob, k.z);
+          k.group.rotation.z = roll;
           k.paddle.rotation.z = Math.sin(t * 2.1 + k.phase) * 0.6;
+
+          // Pantulan: ikut posisi x, balik di bawah permukaan, sedikit goyang.
+          k.refl.position.set(x, -0.16 - bob, k.z);
+          k.refl.rotation.z = -roll;
+          (
+            k.refl.children[0] as import("three").Mesh
+          ).visible = true;
         });
 
-        // burung terbang menyilang, mengepak
         birds.forEach((b) => {
           b.s.position.x += b.v * 0.016;
           b.s.position.y = b.y0 + Math.sin(t * 1.5 + b.off) * 0.35;
@@ -368,12 +544,11 @@ export default function LakeScene({ className = "" }: { className?: string }) {
           if (b.s.position.x > 50) b.s.position.x = -52;
         });
 
-        // kabut hanyut perlahan
         mists.forEach((m, i) => {
           m.position.x += Math.sin(t * 0.05 + i) * 0.004;
         });
 
-        glow.material.opacity = 0.8 + Math.sin(t * 0.6) * 0.08;
+        glow.material.opacity = 0.82 + Math.sin(t * 0.6) * 0.08;
         particles.rotation.y = t * 0.006;
         renderer.render(scene, camera);
       };
@@ -412,14 +587,22 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         cancelAnimationFrame(raf);
         io.disconnect();
         window.removeEventListener("resize", onResize);
-        renderer.dispose();
-        water.geometry.dispose();
-        (water.material as import("three").Material).dispose();
-        pGeo.dispose();
+        scene.traverse((obj) => {
+          const m = obj as import("three").Mesh;
+          if ((m as unknown as { isMesh?: boolean }).isMesh) {
+            m.geometry?.dispose();
+            const mat = m.material as
+              | import("three").Material
+              | import("three").Material[];
+            if (Array.isArray(mat)) mat.forEach((x) => x.dispose());
+            else mat?.dispose();
+          }
+        });
         skyTex.dispose();
         glowTex.dispose();
         mistTex.dispose();
         birdTex.dispose();
+        renderer.dispose();
         host.contains(renderer.domElement) &&
           host.removeChild(renderer.domElement);
       };
