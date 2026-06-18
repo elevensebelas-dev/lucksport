@@ -334,6 +334,8 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         blade2.position.set(0, 0, -1.18);
         paddle.add(blade2);
         paddle.position.set(0.06, 0.74, 0);
+        // Pivot dayung pada hub di tangan pendayung agar bilah menyelam
+        // bergantian ke kedua sisi (bukan berputar di tempat).
         g.add(paddle);
 
         // Bayangan kontak (elips gelap lembut di permukaan air).
@@ -351,7 +353,7 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         shadow.position.set(0, 0.04, 0);
         g.add(shadow);
 
-        return { group: g, paddle };
+        return { group: g, paddle, torso, armL, armR };
       };
 
       const buildReflection = (src: import("three").Group) => {
@@ -367,6 +369,9 @@ export default function LakeScene({ className = "" }: { className?: string }) {
       type Boat = {
         group: import("three").Group;
         paddle: import("three").Group;
+        torso: import("three").Mesh;
+        armL: import("three").Mesh;
+        armR: import("three").Mesh;
         refl: import("three").Group;
         baseX: number;
         z: number;
@@ -380,14 +385,14 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         { baseX: 0.8, z: -22, phase: 1.4, sway: 6, yaw: -0.3 },
         { baseX: 5.8, z: -16, phase: 2.6, sway: 4.5, yaw: -0.4 },
       ].map((cfg) => {
-        const { group, paddle } = buildKayak();
+        const { group, paddle, torso, armL, armR } = buildKayak();
         group.rotation.y = cfg.yaw;
         group.position.set(cfg.baseX, 0.16, cfg.z);
         scene.add(group);
         const refl = buildReflection(group);
         refl.rotation.y = cfg.yaw;
         scene.add(refl);
-        return { group, paddle, refl, ...cfg };
+        return { group, paddle, torso, armL, armR, refl, ...cfg };
       });
 
       // ── Keramba jaring apung (ciri khas Jatiluhur) di kejauhan ──
@@ -523,18 +528,27 @@ export default function LakeScene({ className = "" }: { className?: string }) {
 
         team.forEach((k) => {
           const bob = Math.sin(t * 1.15 + k.phase) * 0.05;
-          const roll = Math.sin(t * 0.85 + k.phase) * 0.045;
           const x = k.baseX + Math.sin(t * 0.07 + k.phase) * k.sway;
-          k.group.position.set(x, 0.16 + bob, k.z);
-          k.group.rotation.z = roll;
-          k.paddle.rotation.z = Math.sin(t * 2.1 + k.phase) * 0.6;
 
-          // Pantulan: ikut posisi x, balik di bawah permukaan, sedikit goyang.
+          // Mendayung bergantian kanan-kiri seperti kayak sungguhan:
+          // bilah menyelam ke satu sisi (roll pada sumbu maju), lalu menyapu
+          // ke belakang (yaw), bergantian tiap setengah siklus.
+          const stroke = t * 2.0 + k.phase;
+          const dip = Math.sin(stroke);
+          k.paddle.rotation.set(dip * 0.78, Math.cos(stroke) * 0.24, 0);
+
+          // Tubuh condong ke sisi yang mendayung; lengan menyertai.
+          k.torso.rotation.x = dip * 0.13;
+          k.armL.rotation.x = 0.9 + dip * 0.38;
+          k.armR.rotation.x = -0.9 + dip * 0.38;
+
+          // Perahu sedikit miring mengikuti tarikan dayung.
+          k.group.position.set(x, 0.16 + bob, k.z);
+          k.group.rotation.z = -dip * 0.05;
+
+          // Pantulan: ikut posisi x, balik di bawah permukaan.
           k.refl.position.set(x, -0.16 - bob, k.z);
-          k.refl.rotation.z = -roll;
-          (
-            k.refl.children[0] as import("three").Mesh
-          ).visible = true;
+          k.refl.rotation.z = dip * 0.05;
         });
 
         birds.forEach((b) => {
