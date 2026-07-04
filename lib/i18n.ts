@@ -196,6 +196,40 @@ const id: Dict = {
     "Ceritakan kebutuhanmu — tim kami siap merekomendasikan perahu yang tepat.",
   "award.cta.btn": "Lihat Katalog",
   "award.cta.wa": "Chat WhatsApp",
+  "award.hero.trust": "Diuji pendayung nasional · Buatan tangan Indonesia",
+  "award.exp.eyebrow": "Rasakan Sensasinya",
+  "award.exp.title": "Pagi Pertamamu di Air Akan Mengubah Segalanya",
+  "award.exp.sub":
+    "Dari kayuhan pertama yang canggung hingga meluncur membelah danau — setiap momen di atas air adalah cerita yang ingin kamu ulang.",
+  "award.exp.cap1": "Kayuhan pertama",
+  "award.exp.cap2": "Latihan pagi",
+  "award.exp.cap3": "Menuju garis finis",
+  "award.why.eyebrow": "Kenapa Luck Sport",
+  "award.why.title": "Dibuat untuk Jatuh Cinta pada Air",
+  "award.why.1.t": "Kelas Kompetisi",
+  "award.why.1.d":
+    "Lambung presisi standar lomba — ringan, cepat, dan seimbang di air.",
+  "award.why.2.t": "Buatan Tangan Indonesia",
+  "award.why.2.d":
+    "Dikerjakan perajin lokal berpengalaman, kualitas diawasi satu per satu.",
+  "award.why.3.t": "Teruji di Danau",
+  "award.why.3.d":
+    "Diuji langsung pendayung nasional di perairan Indonesia sebelum sampai ke tanganmu.",
+  "award.why.4.t": "Konsultasi Personal",
+  "award.why.4.d":
+    "Tim kami membantu memilih perahu yang pas — dari pemula hingga atlet.",
+  "award.steps.eyebrow": "Baru Mau Mulai?",
+  "award.steps.title": "Mulai dalam 3 Langkah",
+  "award.steps.sub":
+    "Tak perlu pengalaman. Dari nol hingga kayuhan pertamamu — kami temani.",
+  "award.steps.1.t": "Ceritakan Kebutuhanmu",
+  "award.steps.1.d": "Chat tim kami — level, tujuan, dan bujetmu.",
+  "award.steps.2.t": "Dapatkan Rekomendasi",
+  "award.steps.2.d": "Kami sarankan perahu yang paling pas untukmu.",
+  "award.steps.3.t": "Turun ke Air",
+  "award.steps.3.d": "Perahu tiba, petualangan dimulai. Selamat mendayung!",
+  "award.steps.cta": "Mulai Konsultasi Gratis",
+  "award.products.view": "Lihat Detail",
 };
 
 const en: Dict = {
@@ -374,6 +408,40 @@ const en: Dict = {
     "Tell us what you need — our team will recommend the right boat.",
   "award.cta.btn": "View Catalog",
   "award.cta.wa": "Chat WhatsApp",
+  "award.hero.trust": "Tested by national paddlers · Handcrafted in Indonesia",
+  "award.exp.eyebrow": "Feel the Thrill",
+  "award.exp.title": "Your First Morning on the Water Changes Everything",
+  "award.exp.sub":
+    "From that first clumsy stroke to gliding across the lake — every moment on the water is a story you'll want to relive.",
+  "award.exp.cap1": "First stroke",
+  "award.exp.cap2": "Morning training",
+  "award.exp.cap3": "To the finish line",
+  "award.why.eyebrow": "Why Luck Sport",
+  "award.why.title": "Built to Make You Fall in Love with the Water",
+  "award.why.1.t": "Competition Grade",
+  "award.why.1.d":
+    "Race-standard precision hulls — light, fast, and balanced on the water.",
+  "award.why.2.t": "Handcrafted in Indonesia",
+  "award.why.2.d":
+    "Built by experienced local artisans, quality-checked one by one.",
+  "award.why.3.t": "Lake Tested",
+  "award.why.3.d":
+    "Proven by national paddlers on Indonesian waters before it reaches you.",
+  "award.why.4.t": "Personal Guidance",
+  "award.why.4.d":
+    "Our team helps you pick the right boat — from beginner to athlete.",
+  "award.steps.eyebrow": "New to Paddling?",
+  "award.steps.title": "Start in 3 Steps",
+  "award.steps.sub":
+    "No experience needed. From zero to your first stroke — we've got you.",
+  "award.steps.1.t": "Tell Us Your Needs",
+  "award.steps.1.d": "Chat with our team — your level, goals, and budget.",
+  "award.steps.2.t": "Get a Recommendation",
+  "award.steps.2.d": "We'll suggest the boat that fits you best.",
+  "award.steps.3.t": "Hit the Water",
+  "award.steps.3.d": "Your boat arrives, the adventure begins. Happy paddling!",
+  "award.steps.cta": "Start a Free Consultation",
+  "award.products.view": "View Details",
 };
 
 export const DICT: Record<Lang, Dict> = { id, en };
