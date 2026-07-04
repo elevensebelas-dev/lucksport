@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useLayoutEffect, useRef } from "react";
+import { Fragment, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLang } from "@/context/LanguageContext";
@@ -24,10 +24,11 @@ function Words({ text, className = "" }: { text: string; className?: string }) {
   return (
     <>
       {text.split(" ").map((w, i) => (
-        <span key={i} className={`inline-block ${className}`}>
-          {w}
-          {" "}
-        </span>
+        // Spasi diletakkan DI LUAR span inline-block (sebagai node teks) agar
+        // tidak dibuang browser — mencegah kata-kata menempel.
+        <Fragment key={i}>
+          <span className={`inline-block ${className}`}>{w}</span>{" "}
+        </Fragment>
       ))}
     </>
   );
