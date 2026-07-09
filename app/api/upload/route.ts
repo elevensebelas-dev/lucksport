@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { put } from "@vercel/blob";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +11,12 @@ const IMAGE_MAX = 8 * 1024 * 1024; // 8MB
 const MODEL_EXT = ["glb", "gltf"];
 const MODEL_MAX = 40 * 1024 * 1024; // 40MB (model 3D bisa besar)
 
+// Penyimpanan: jika BLOB_READ_WRITE_TOKEN ada (produksi/Vercel Blob) → simpan
+// ke object storage & kembalikan URL publik permanen. Jika tidak (dev lokal)
+// → simpan ke public/uploads seperti sebelumnya.
+const useBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
+
 // POST /api/upload — unggah foto (JPG/PNG/WebP/AVIF) ATAU model 3D (.glb/.gltf).
-// Kembalikan URL lokal (/uploads/...).
 export async function POST(request: Request) {
   let form: FormData;
   try {
@@ -46,8 +51,6 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-
   const safeExt = ext || (isModel ? "glb" : "jpg");
   const base = file.name
     .replace(/\.[^.]+$/, "")
@@ -57,9 +60,32 @@ export async function POST(request: Request) {
     .slice(0, 40)
     .replace(/^-|-$/g, "");
   const filename = `${base || (isModel ? "model" : "foto")}-${Date.now()}.${safeExt}`;
+  const kind = isModel ? "model" : "image";
 
-  const bytes = Buffer.from(await file.arrayBuffer());
-  fs.writeFileSync(path.join(UPLOAD_DIR, filename), bytes);
+  try {
+    if (useBlob) {
+      // Simpan ke Vercel Blob → URL publik permanen (berfungsi di serverless).
+      const blob = await put(`uploads/${filename}`, file, {
+        access: "public",
+        contentType: file.type || undefined,
+      });
+      return NextResponse.json({ url: blob.url, kind }, { status: 201 });
+    }
 
-  return NextResponse.json({ url: `/uploads/${filename}`, kind: isModel ? "model" : "image" }, { status: 201 });
+    // Dev lokal: tulis ke public/uploads.
+    if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+    const bytes = Buffer.from(await file.arrayBuffer());
+    fs.writeFileSync(path.join(UPLOAD_DIR, filename), bytes);
+    return NextResponse.json({ url: `/uploads/${filename}`, kind }, { status: 201 });
+  } catch (err) {
+    console.error("Upload gagal:", err);
+    return NextResponse.json(
+      {
+        error: useBlob
+          ? "Gagal menyimpan ke storage. Coba lagi."
+          : "Gagal menyimpan file. Di server produksi (Vercel) aktifkan Vercel Blob agar upload berfungsi.",
+      },
+      { status: 500 }
+    );
+  }
 }
