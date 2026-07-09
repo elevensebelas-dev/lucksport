@@ -378,7 +378,7 @@ export default function HomeExperience({ products }: { products: Product[] }) {
             <div data-parallax className="absolute inset-[-12%]">
               <Image
                 src="/gambar-ls/ls-05.jpg"
-                alt="Kayak Luck Sport"
+                alt={t("award.craft1.title")}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 placeholder="blur"
@@ -400,7 +400,7 @@ export default function HomeExperience({ products }: { products: Product[] }) {
             <div data-parallax className="absolute inset-[-12%]">
               <Image
                 src="/gambar-ls/ls-22.jpg"
-                alt="Pendayung di Danau Jatiluhur saat pagi"
+                alt={t("award.craft2.title")}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 placeholder="blur"
