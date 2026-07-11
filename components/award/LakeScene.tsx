@@ -165,19 +165,30 @@ export default function LakeScene({ className = "" }: { className?: string }) {
 
       // ── Air danau (shader kustom: gradasi kedalaman, pantulan matahari,
       //    kilau spekular, Fresnel langit) ──
+      // Riak interaktif: tiap slot = vec4(x, z, waktuLahir, kekuatan).
+      const MAX_RIPPLES = 8;
+      const ripples: import("three").Vector4[] = [];
+      for (let i = 0; i < MAX_RIPPLES; i++)
+        ripples.push(new THREE.Vector4(0, 0, -100, 0));
+
       const uniforms = {
         uTime: { value: 0 },
         uDeep: { value: new THREE.Color("#155f93") },
         uHorizon: { value: new THREE.Color("#cfe6f5") },
         uSun: { value: new THREE.Color("#ffffff") },
         uSky: { value: new THREE.Color("#bfe0ff") },
+        uRipples: { value: ripples },
+        uMouse: { value: new THREE.Vector2(999, 999) },
+        uMouseOn: { value: 0 },
       };
       const water = new THREE.Mesh(
         new THREE.PlaneGeometry(440, 260, 180, 120),
         new THREE.ShaderMaterial({
           uniforms,
           vertexShader: /* glsl */ `
+            #define RIPPLES 8
             uniform float uTime;
+            uniform vec4 uRipples[RIPPLES];
             varying vec3 vWorld;
             void main() {
               vec3 pos = position;
@@ -185,6 +196,20 @@ export default function LakeScene({ className = "" }: { className?: string }) {
                 sin(position.x * 0.18 + uTime * 0.8) * 0.13 +
                 sin(position.y * 0.12 - uTime * 0.6) * 0.16 +
                 sin((position.x + position.y) * 0.07 + uTime * 0.35) * 0.09;
+
+              // Riak dari kursor: gelombang cincin yang mengembang & meredup.
+              vec2 wxz = (modelMatrix * vec4(position, 1.0)).xz;
+              for (int i = 0; i < RIPPLES; i++) {
+                vec4 rp = uRipples[i];
+                float age = uTime - rp.z;
+                if (rp.w > 0.0 && age > 0.0 && age < 2.2) {
+                  float d = distance(wxz, rp.xy);
+                  float radius = age * 6.0;
+                  float env = exp(-abs(d - radius) * 0.5) * (1.0 - age / 2.2);
+                  h += sin((d - radius) * 1.7) * env * rp.w * 0.55;
+                }
+              }
+
               pos.z += h;
               vec4 wp = modelMatrix * vec4(pos, 1.0);
               vWorld = wp.xyz;
@@ -192,8 +217,12 @@ export default function LakeScene({ className = "" }: { className?: string }) {
             }
           `,
           fragmentShader: /* glsl */ `
+            #define RIPPLES 8
             uniform float uTime;
             uniform vec3 uDeep, uHorizon, uSun, uSky;
+            uniform vec4 uRipples[RIPPLES];
+            uniform vec2 uMouse;
+            uniform float uMouseOn;
             varying vec3 vWorld;
             float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
             float noise(vec2 p){
@@ -219,6 +248,21 @@ export default function LakeScene({ className = "" }: { className?: string }) {
               col += vec3(1.0, 0.97, 0.85) * sp * 0.5 * dist;
               float sp2 = pow(noise(vWorld.xz * 6.0 - uTime * 0.9), 30.0);
               col += vec3(1.0) * sp2 * 0.35;
+
+              // Cincin cahaya riak mengikuti kursor.
+              for (int i = 0; i < RIPPLES; i++) {
+                vec4 rp = uRipples[i];
+                float age = uTime - rp.z;
+                if (rp.w > 0.0 && age > 0.0 && age < 2.2) {
+                  float d = distance(vWorld.xz, rp.xy);
+                  float radius = age * 6.0;
+                  float band = smoothstep(2.3, 0.0, abs(d - radius));
+                  col += vec3(0.9, 0.97, 1.0) * band * (1.0 - age / 2.2) * rp.w * 1.0;
+                }
+              }
+              // Pendar lembut tepat di bawah kursor.
+              col += uSky * smoothstep(9.0, 0.0, distance(vWorld.xz, uMouse)) * 0.12 * uMouseOn;
+
               gl_FragColor = vec4(col, 1.0);
             }
           `,
@@ -512,18 +556,78 @@ export default function LakeScene({ className = "" }: { className?: string }) {
       let raf = 0;
       let visible = true;
 
+      // ── Interaktivitas: riak mengikuti kursor + parallax kamera ──
+      const raycaster = new THREE.Raycaster();
+      const waterPlaneMath = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+      const ndc = new THREE.Vector2();
+      const mouseWorld = new THREE.Vector3();
+      const lastSpawn = new THREE.Vector2(1e4, 1e4);
+      const tmp2 = new THREE.Vector2();
+      let ripplePtr = 0;
+      let mouseActive = false;
+      let mNdcX = 0;
+      let mNdcY = 0;
+      let camPX = 0;
+      let camPY = 0;
+
+      const spawnRipple = (strength: number) => {
+        ripples[ripplePtr % MAX_RIPPLES].set(
+          mouseWorld.x,
+          mouseWorld.z,
+          clock.getElapsedTime(),
+          strength
+        );
+        ripplePtr++;
+      };
+
+      const onPointerMove = (e: PointerEvent) => {
+        const rect = host.getBoundingClientRect();
+        if (
+          !rect.width ||
+          e.clientX < rect.left ||
+          e.clientX > rect.right ||
+          e.clientY < rect.top ||
+          e.clientY > rect.bottom
+        ) {
+          mouseActive = false;
+          return;
+        }
+        mNdcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mNdcY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        mouseActive = true;
+        ndc.set(mNdcX, mNdcY);
+        raycaster.setFromCamera(ndc, camera);
+        if (raycaster.ray.intersectPlane(waterPlaneMath, mouseWorld)) {
+          uniforms.uMouse.value.set(mouseWorld.x, mouseWorld.z);
+          tmp2.set(mouseWorld.x, mouseWorld.z);
+          if (lastSpawn.distanceTo(tmp2) > 2.0) {
+            spawnRipple(0.85);
+            lastSpawn.copy(tmp2);
+          }
+        }
+      };
+
+      const onPointerDown = (e: PointerEvent) => {
+        onPointerMove(e);
+        if (mouseActive) spawnRipple(1.6); // percikan lebih besar saat klik
+      };
+
       const renderFrame = () => {
         const t = clock.getElapsedTime();
         uniforms.uTime.value = t;
 
-        // Gerak kamera sinematik: melayang halus + sedikit mengorbit.
+        // Gerak kamera sinematik + parallax mengikuti kursor.
         if (!reduceMotion) {
+          camPX += ((mouseActive ? mNdcX : 0) - camPX) * 0.045;
+          camPY += ((mouseActive ? mNdcY : 0) - camPY) * 0.045;
           camera.position.set(
-            CAM_BASE.x + Math.sin(t * 0.07) * 1.7,
-            CAM_BASE.y + Math.sin(t * 0.05) * 0.28,
+            CAM_BASE.x + Math.sin(t * 0.07) * 1.7 + camPX * 1.6,
+            CAM_BASE.y + Math.sin(t * 0.05) * 0.28 + camPY * 0.5,
             CAM_BASE.z + Math.sin(t * 0.04) * 0.7
           );
           camera.lookAt(camTarget);
+          uniforms.uMouseOn.value +=
+            ((mouseActive ? 1 : 0) - uniforms.uMouseOn.value) * 0.08;
         }
 
         team.forEach((k) => {
@@ -587,6 +691,11 @@ export default function LakeScene({ className = "" }: { className?: string }) {
       });
       io.observe(host);
 
+      if (!reduceMotion) {
+        window.addEventListener("pointermove", onPointerMove, { passive: true });
+        window.addEventListener("pointerdown", onPointerDown, { passive: true });
+      }
+
       const onResize = () => {
         const w = host.clientWidth;
         const h = host.clientHeight;
@@ -601,6 +710,8 @@ export default function LakeScene({ className = "" }: { className?: string }) {
         cancelAnimationFrame(raf);
         io.disconnect();
         window.removeEventListener("resize", onResize);
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerdown", onPointerDown);
         scene.traverse((obj) => {
           const m = obj as import("three").Mesh;
           if ((m as unknown as { isMesh?: boolean }).isMesh) {
