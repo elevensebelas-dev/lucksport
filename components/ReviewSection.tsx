@@ -26,6 +26,8 @@ export default function ReviewSection({
   const [name, setName] = useState("");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  // Umpan bot (honeypot) — pengguna asli selalu membiarkannya kosong.
+  const [website, setWebsite] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
@@ -55,11 +57,17 @@ export default function ReviewSection({
       const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product_id: productId, name, rating, comment }),
+        body: JSON.stringify({
+          product_id: productId,
+          name,
+          rating,
+          comment,
+          website,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gagal mengirim ulasan.");
-      setReviews((prev) => [data.review, ...prev]);
+      if (data.review) setReviews((prev) => [data.review, ...prev]);
       setName("");
       setRating(0);
       setComment("");
@@ -134,6 +142,18 @@ export default function ReviewSection({
               onSubmit={submit}
               className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-5"
             >
+              {/* Honeypot: tak terlihat & tak terjangkau pengguna maupun
+                  pembaca layar — hanya bot pengisi-otomatis yang mengisinya. */}
+              <input
+                type="text"
+                name="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute h-0 w-0 opacity-0"
+              />
               <div className="mb-3">
                 <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                   Rating *

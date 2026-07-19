@@ -1,0 +1,255 @@
+[
+  {
+    "product_id": "ls-boat-01",
+    "slug": "luck-sport-outrigger-canoe",
+    "name": "Luck Sport Outrigger Canoe",
+    "category": "Kano",
+    "description": "Kano outrigger (bercadik) Luck Sport untuk dayung rekreasi maupun latihan. Stabil di air berkat penyeimbang samping. Hubungi CS untuk spesifikasi & harga.",
+    "description_en": "Luck Sport outrigger canoe for recreational and training paddling. Stable on the water thanks to its side stabilizer. Contact CS for specs & price.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-01.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [
+      "new"
+    ],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-02",
+    "slug": "luck-sport-kayak-four-k4-carbon-fiber",
+    "name": "Luck Sport Kayak Four (K4) - Carbon Fiber",
+    "category": "Kayak",
+    "description": "Kayak balap empat pendayung (K4) berbahan serat karbon — ringan, kaku, dan cepat untuk nomor sprint. Hubungi CS untuk spesifikasi & harga.",
+    "description_en": "Four-paddler racing kayak (K4) in carbon fiber — light, stiff, and fast for sprint events. Contact CS for specs & price.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-02.jpg",
+      "/gambar-ls/ls-09.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-03",
+    "slug": "luck-sport-canoe-single-c1-fiberglass",
+    "name": "Luck Sport Canoe Single (C1) - Fiberglass",
+    "category": "Kano",
+    "description": "Kano balap satu pendayung (C1) berbahan fiberglass yang tangguh dan ekonomis. Cocok untuk latihan & kompetisi. Hubungi CS untuk detail.",
+    "description_en": "Single-paddler racing canoe (C1) in tough, economical fiberglass. Great for training & competition. Contact CS for details.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-03.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-04",
+    "slug": "luck-sport-kayak-slalom",
+    "name": "Luck Sport Kayak Slalom",
+    "category": "Kayak",
+    "description": "Kayak slalom Luck Sport — lincah dan responsif untuk arung jeram & lintasan slalom. Hubungi CS untuk spesifikasi & harga.",
+    "description_en": "Luck Sport slalom kayak — agile and responsive for whitewater & slalom courses. Contact CS for specs & price.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-04.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-05",
+    "slug": "luck-sport-kayak-single-k1-carbon-fiber",
+    "name": "Luck Sport Kayak Single (K1) - Carbon Fiber",
+    "category": "Kayak",
+    "description": "Kayak balap satu pendayung (K1) serat karbon — ringan dan cepat untuk nomor sprint. Hubungi CS untuk spesifikasi & harga.",
+    "description_en": "Single-paddler racing kayak (K1) in carbon fiber — light and fast for sprint events. Contact CS for specs & price.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-05.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [
+      "best_seller"
+    ],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-06",
+    "slug": "luck-sport-kayak-double-carbon-fiber",
+    "name": "Luck Sport Kayak Double - Carbon Fiber",
+    "category": "Kayak",
+    "description": "Kayak balap dua pendayung berbahan serat karbon, stabil dan bertenaga. Hubungi CS untuk spesifikasi & harga.",
+    "description_en": "Two-paddler racing kayak in carbon fiber — stable and powerful. Contact CS for specs & price.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-06.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-07",
+    "slug": "luck-sport-kayak-single-k1-fiberglass",
+    "name": "Luck Sport Kayak Single (K1) - Fiberglass",
+    "category": "Kayak",
+    "description": "Kayak satu pendayung (K1) berbahan fiberglass yang kuat dan ekonomis. Ideal untuk latihan. Hubungi CS untuk detail.",
+    "description_en": "Single-paddler kayak (K1) in strong, economical fiberglass. Ideal for training. Contact CS for details.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-07.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-08",
+    "slug": "luck-sport-canoe-double-c2-carbon-fiber",
+    "name": "Luck Sport Canoe Double (C2) - Carbon Fiber",
+    "category": "Kano",
+    "description": "Kano balap dua pendayung (C2) serat karbon untuk performa kompetisi. Hubungi CS untuk spesifikasi & harga.",
+    "description_en": "Two-paddler racing canoe (C2) in carbon fiber for competition performance. Contact CS for specs & price.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-08.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-09",
+    "slug": "luck-sport-lcr-inflatable-boat",
+    "name": "Luck Sport LCR Inflatable Boat",
+    "category": "Perahu Karet",
+    "description": "Perahu karet LCR (inflatable boat) Luck Sport untuk SAR, patroli, dan rekreasi air. Tahan banting dengan lantai aluminium. Hubungi CS untuk ukuran & harga.",
+    "description_en": "Luck Sport LCR inflatable boat for SAR, patrol, and water recreation. Rugged build with an aluminum floor. Contact CS for sizes & price.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-10.jpg",
+      "/gambar-ls/ls-11.jpg",
+      "/gambar-ls/ls-12.jpg",
+      "/gambar-ls/ls-13.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [
+      "new"
+    ],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  },
+  {
+    "product_id": "ls-boat-10",
+    "slug": "luck-sport-sup-board",
+    "name": "Luck Sport SUP Board",
+    "category": "SUP",
+    "description": "Papan Stand-Up Paddle (SUP) Luck Sport — stabil dan ringan untuk rekreasi maupun latihan di danau dan pantai. Hubungi CS untuk ukuran & harga.",
+    "description_en": "Luck Sport Stand-Up Paddle (SUP) board — stable and light for recreation and training on lakes and beaches. Contact CS for sizes & price.",
+    "price": 0,
+    "price_original": null,
+    "images": [
+      "/gambar-ls/ls-16.jpg",
+      "/gambar-ls/ls-20.jpg"
+    ],
+    "variants": [
+      {
+        "size": "Standar",
+        "color": "Default",
+        "stock": 1
+      }
+    ],
+    "badges": [
+      "new"
+    ],
+    "is_active": true,
+    "created_at": "2025-05-25T08:00:00Z",
+    "updated_at": "2025-05-25T08:00:00Z"
+  }
+]

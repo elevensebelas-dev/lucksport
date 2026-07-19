@@ -99,6 +99,21 @@ export function addReview(input: {
   if (comment.length < 3)
     return { ok: false, error: "Ulasan terlalu pendek." };
 
+  // Penyaring spam: ulasan asli pelanggan tidak memuat tautan.
+  if (/(https?:\/\/|www\.|\[url|<a\s)/i.test(`${name} ${comment}`))
+    return { ok: false, error: "Ulasan tidak boleh memuat tautan." };
+
+  // Tolak ulasan identik yang dikirim berulang untuk produk yang sama.
+  const existing = readReviews();
+  const isDuplicate = existing.some(
+    (r) =>
+      r.product_id === input.product_id &&
+      r.name.toLowerCase() === name.toLowerCase() &&
+      r.comment.toLowerCase() === comment.toLowerCase()
+  );
+  if (isDuplicate)
+    return { ok: false, error: "Ulasan serupa sudah pernah dikirim." };
+
   const review: Review = {
     id: globalThis.crypto?.randomUUID?.() ?? `rv-${Date.now()}`,
     product_id: input.product_id,
@@ -108,9 +123,8 @@ export function addReview(input: {
     approved: true, // tampil langsung; admin dapat menyembunyikan/hapus
     created_at: new Date().toISOString(),
   };
-  const list = readReviews();
-  list.push(review);
-  writeReviews(list);
+  existing.push(review);
+  writeReviews(existing);
   return { ok: true, review };
 }
 
