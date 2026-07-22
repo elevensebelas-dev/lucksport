@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default function AdminUlasanPage() {
-  const reviews = getAllReviews();
+export default async function AdminUlasanPage() {
+  const reviews = await getAllReviews();
   // Peta nama produk untuk ditampilkan di tabel.
   const names = Object.fromEntries(
-    readAll().map((p) => [p.product_id, p.name])
+    (await readAll()).map((p) => [p.product_id, p.name])
   );
   return <AdminReviewsClient initial={reviews} productNames={names} />;
 }

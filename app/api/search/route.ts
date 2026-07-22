@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ results: [] });
   }
 
-  const results = getActiveProducts()
+  const results = (await getActiveProducts())
     .filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||

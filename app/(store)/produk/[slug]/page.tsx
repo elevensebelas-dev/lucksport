@@ -23,13 +23,13 @@ interface Params {
 }
 
 // Pre-render semua halaman produk (SSG) untuk SEO & performa (PRD 7.2).
-export function generateStaticParams() {
-  return readAll().map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  return (await readAll()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) return { title: "Produk tidak ditemukan" };
   return {
     title: product.name,
@@ -44,16 +44,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const related = getRelatedProducts(product, 4);
+  const related = await getRelatedProducts(product, 4);
   const base = `https://${STORE.domain}`;
   const inStock = totalStock(product) > 0;
 
-  const reviews = getApprovedReviews(product.product_id);
-  const summary = getRatingSummary(product.product_id);
-  const summaries = getRatingSummaries();
+  const reviews = await getApprovedReviews(product.product_id);
+  const summary = await getRatingSummary(product.product_id);
+  const summaries = await getRatingSummaries();
 
   const productLd = {
     "@context": "https://schema.org",

@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default function AdminRestockPage() {
-  return <AdminRestockClient initial={getAllRestock()} />;
+export default async function AdminRestockPage() {
+  return <AdminRestockClient initial={await getAllRestock()} />;
 }

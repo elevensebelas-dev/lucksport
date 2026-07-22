@@ -29,7 +29,7 @@ export async function PUT(request: Request, { params }: Ctx) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
-  const product = updateProduct(id, result.value);
+  const product = await updateProduct(id, result.value);
   if (!product) {
     return NextResponse.json({ error: "Produk tidak ditemukan." }, { status: 404 });
   }
@@ -41,7 +41,7 @@ export async function PUT(request: Request, { params }: Ctx) {
 // PATCH /api/products/:id — toggle aktif/nonaktif.
 export async function PATCH(request: Request, { params }: Ctx) {
   const { id } = await params;
-  if (!getProductById(id)) {
+  if (!(await getProductById(id))) {
     return NextResponse.json({ error: "Produk tidak ditemukan." }, { status: 404 });
   }
   let body: { is_active?: boolean } = {};
@@ -50,7 +50,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   } catch {
     /* abaikan */
   }
-  const product = setActive(id, body.is_active !== false);
+  const product = await setActive(id, body.is_active !== false);
   revalidatePath("/", "layout");
   return NextResponse.json({ product });
 }
@@ -58,7 +58,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
 // DELETE /api/products/:id — hapus produk.
 export async function DELETE(_request: Request, { params }: Ctx) {
   const { id } = await params;
-  const ok = deleteProduct(id);
+  const ok = await deleteProduct(id);
   if (!ok) {
     return NextResponse.json({ error: "Produk tidak ditemukan." }, { status: 404 });
   }

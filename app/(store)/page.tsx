@@ -3,8 +3,8 @@ import HomeExperience from "@/components/award/HomeExperience";
 import { getActiveProducts } from "@/lib/store";
 import { STORE } from "@/lib/config";
 
-export default function HomePage() {
-  const products = getActiveProducts();
+export default async function HomePage() {
+  const products = await getActiveProducts();
   const base = `https://${STORE.domain}`;
 
   const orgLd = {

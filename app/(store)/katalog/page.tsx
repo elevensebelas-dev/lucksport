@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     "Jelajahi katalog lengkap Lucksport: jersey, sepatu, celana, dan aksesori olahraga. Filter berdasarkan kategori, harga, dan ketersediaan.",
 };
 
-export default function KatalogPage() {
-  const products = getActiveProducts();
-  const summaries = getRatingSummaries();
+export default async function KatalogPage() {
+  const products = await getActiveProducts();
+  const summaries = await getRatingSummaries();
   return (
     <Suspense fallback={<div className="container-content py-20 text-center text-slate-500">Memuat katalog…</div>}>
       <CatalogClient products={products} summaries={summaries} />

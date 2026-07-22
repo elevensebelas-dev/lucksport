@@ -13,9 +13,10 @@ export const metadata: Metadata = {
     "Penawaran spesial Lucksport — produk olahraga pilihan dengan harga diskon. Stok terbatas!",
 };
 
-export default function PromoPage() {
+export default async function PromoPage() {
   // Produk diskon, urut dari potongan terbesar.
-  const onSale = getActiveProducts()
+  const active = await getActiveProducts();
+  const onSale = active
     .filter((p) => p.price_original && p.price_original > p.price)
     .sort(
       (a, b) =>
@@ -23,11 +24,11 @@ export default function PromoPage() {
         discountPercent(a.price, a.price_original!)
     );
 
-  const bestSellers = getActiveProducts()
+  const bestSellers = active
     .filter((p) => p.badges.includes("best_seller"))
     .slice(0, 4);
 
-  const summaries = getRatingSummaries();
+  const summaries = await getRatingSummaries();
 
   return (
     <div>

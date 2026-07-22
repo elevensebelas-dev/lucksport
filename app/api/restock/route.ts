@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Body tidak valid." }, { status: 400 });
   }
 
-  const result = addRestock({
+  const result = await addRestock({
     product_id: String(body.product_id ?? ""),
     product_name: String(body.product_name ?? ""),
     contact: String(body.contact ?? ""),

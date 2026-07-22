@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 // GET /api/products — daftar semua produk (termasuk nonaktif) untuk admin.
 export async function GET() {
-  return NextResponse.json({ products: getAllProductsAdmin() });
+  return NextResponse.json({ products: await getAllProductsAdmin() });
 }
 
 // POST /api/products — tambah produk baru.
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
-  const product = createProduct(result.value);
+  const product = await createProduct(result.value);
 
   // Segarkan storefront agar produk baru langsung tampil.
   revalidatePath("/", "layout");

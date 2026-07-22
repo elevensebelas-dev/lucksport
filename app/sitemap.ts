@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { readAll } from "@/lib/store";
 import { STORE } from "@/lib/config";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = `https://${STORE.domain}`;
   const staticRoutes = [
     "",
@@ -18,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path === "" ? 1 : 0.7,
   }));
 
-  const productRoutes = readAll().map((p) => ({
+  const productRoutes = (await readAll()).map((p) => ({
     url: `${base}/produk/${p.slug}`,
     lastModified: new Date(p.updated_at),
     changeFrequency: "weekly" as const,

@@ -1,22 +1,48 @@
 // ─────────────────────────────────────────────────────────────────────────
 // Server-only data store untuk produk (PRD §8 — manajemen konten produk).
 //
-// Sumber kebenaran runtime = data/products.json. File ini di-seed otomatis
-// dari katalog awal (lib/products.ts) saat pertama dijalankan, lalu seluruh
-// operasi admin (tambah/edit/hapus) menulis ke file ini.
+// Dua mode (lihat docs/DB_MIGRATION_PLAN.md):
+//   • DATABASE_URL diset  → PostgreSQL/Supabase via Drizzle (produksi).
+//   • DATABASE_URL kosong → fallback file data/products.json (dev/self-host),
+//     atau SEED read-only bila file tak ada (serverless tanpa DB).
 //
-// CATATAN: penyimpanan berbasis file cocok untuk dev & self-hosted (VPS).
-// Di platform serverless read-only (mis. Vercel), ganti layer ini dengan
-// Headless CMS / database sesuai PRD §7.1.
+// Seluruh fungsi async agar tanda tangannya sama di kedua mode.
 // ─────────────────────────────────────────────────────────────────────────
 import fs from "fs";
 import path from "path";
+import { eq, desc } from "drizzle-orm";
+import { db, requireDb } from "./db/client";
+import { products as productsTable } from "./db/schema";
 import { products as SEED, isCallForPriceCategory } from "./products";
 import type { Product, Category, Variant, Badge } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const FILE = path.join(DATA_DIR, "products.json");
 
+// ── Konversi baris DB ↔ objek Product (bentuk snake_case lib/types.ts) ──
+type Row = typeof productsTable.$inferSelect;
+
+function rowToProduct(r: Row): Product {
+  return {
+    product_id: r.productId,
+    slug: r.slug,
+    name: r.name,
+    category: r.category as Category,
+    description: r.description,
+    description_en: r.descriptionEn ?? undefined,
+    model3d: r.model3d ?? undefined,
+    price: r.price,
+    price_original: r.priceOriginal,
+    images: r.images,
+    variants: r.variants,
+    badges: r.badges,
+    is_active: r.isActive,
+    created_at: r.createdAt.toISOString(),
+    updated_at: r.updatedAt.toISOString(),
+  };
+}
+
+// ── Fallback file (perilaku lama, dipertahankan apa adanya) ──
 function ensureFile(): void {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
   if (!fs.existsSync(FILE)) {
@@ -24,10 +50,9 @@ function ensureFile(): void {
   }
 }
 
-export function readAll(): Product[] {
-  // Baca TANPA pernah menulis: di platform serverless read-only (Vercel)
-  // file ini tak ada & tak bisa dibuat. Bila tak ada / gagal dibaca →
-  // pakai katalog awal (SEED) sebagai sumber data storefront.
+function readAllFile(): Product[] {
+  // Baca TANPA pernah menulis: di serverless read-only file ini tak ada &
+  // tak bisa dibuat → pakai katalog awal (SEED).
   try {
     if (!fs.existsSync(FILE)) return [...SEED];
     const raw = fs.readFileSync(FILE, "utf-8");
@@ -38,44 +63,85 @@ export function readAll(): Product[] {
   }
 }
 
-function writeAll(list: Product[]): void {
+function writeAllFile(list: Product[]): void {
   ensureFile();
   fs.writeFileSync(FILE, JSON.stringify(list, null, 2), "utf-8");
 }
 
 // ── Query (storefront) ──
-export function getActiveProducts(): Product[] {
-  return readAll().filter((p) => p.is_active);
+export async function readAll(): Promise<Product[]> {
+  if (db) {
+    const rows = await db.select().from(productsTable);
+    return rows.map(rowToProduct);
+  }
+  return readAllFile();
 }
 
-export function getAllProductsAdmin(): Product[] {
+export async function getActiveProducts(): Promise<Product[]> {
+  return (await readAll()).filter((p) => p.is_active);
+}
+
+export async function getAllProductsAdmin(): Promise<Product[]> {
   // Termasuk produk nonaktif, urut terbaru diperbarui.
-  return readAll().sort(
+  if (db) {
+    const rows = await db
+      .select()
+      .from(productsTable)
+      .orderBy(desc(productsTable.updatedAt));
+    return rows.map(rowToProduct);
+  }
+  return readAllFile().sort(
     (a, b) =>
       new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   );
 }
 
-export function getProductBySlug(slug: string): Product | undefined {
-  return getActiveProducts().find((p) => p.slug === slug);
+export async function getProductBySlug(
+  slug: string
+): Promise<Product | undefined> {
+  if (db) {
+    const rows = await db
+      .select()
+      .from(productsTable)
+      .where(eq(productsTable.slug, slug))
+      .limit(1);
+    const p = rows[0] ? rowToProduct(rows[0]) : undefined;
+    return p?.is_active ? p : undefined;
+  }
+  return (await getActiveProducts()).find((p) => p.slug === slug);
 }
 
-export function getProductById(id: string): Product | undefined {
-  return readAll().find((p) => p.product_id === id);
+export async function getProductById(
+  id: string
+): Promise<Product | undefined> {
+  if (db) {
+    const rows = await db
+      .select()
+      .from(productsTable)
+      .where(eq(productsTable.productId, id))
+      .limit(1);
+    return rows[0] ? rowToProduct(rows[0]) : undefined;
+  }
+  return (await readAll()).find((p) => p.product_id === id);
 }
 
-export function getProductsByCategory(category: Category): Product[] {
-  return getActiveProducts().filter((p) => p.category === category);
+export async function getProductsByCategory(
+  category: Category
+): Promise<Product[]> {
+  return (await getActiveProducts()).filter((p) => p.category === category);
 }
 
-export function getRelatedProducts(product: Product, limit = 4): Product[] {
-  return getActiveProducts()
+export async function getRelatedProducts(
+  product: Product,
+  limit = 4
+): Promise<Product[]> {
+  return (await getActiveProducts())
     .filter((p) => p.category === product.category && p.slug !== product.slug)
     .slice(0, limit);
 }
 
-export function getFeaturedProducts(limit = 6): Product[] {
-  return getActiveProducts()
+export async function getFeaturedProducts(limit = 6): Promise<Product[]> {
+  return (await getActiveProducts())
     .filter((p) => p.badges.length > 0)
     .slice(0, limit);
 }
@@ -91,8 +157,8 @@ export function slugify(name: string): string {
     .replace(/-+/g, "-");
 }
 
-function uniqueSlug(base: string, excludeId?: string): string {
-  const list = readAll();
+async function uniqueSlug(base: string, excludeId?: string): Promise<string> {
+  const list = await readAll();
   let slug = base || "produk";
   let i = 2;
   while (list.some((p) => p.slug === slug && p.product_id !== excludeId)) {
@@ -101,7 +167,7 @@ function uniqueSlug(base: string, excludeId?: string): string {
   return slug;
 }
 
-// ── Validasi & normalisasi input dari form/API ──
+// ── Validasi & normalisasi input dari form/API (murni, tetap sinkron) ──
 export interface ProductInput {
   name: string;
   category: Category;
@@ -199,13 +265,12 @@ export function validateInput(input: Partial<ProductInput>): {
 }
 
 // ── Mutasi ──
-export function createProduct(input: ProductInput): Product {
-  const list = readAll();
+export async function createProduct(input: ProductInput): Promise<Product> {
   const now = new Date().toISOString();
   const product: Product = {
     product_id:
       (globalThis.crypto?.randomUUID?.() as string) ?? `id-${Date.now()}`,
-    slug: uniqueSlug(slugify(input.name)),
+    slug: await uniqueSlug(slugify(input.name)),
     name: input.name,
     category: input.category,
     description: input.description,
@@ -220,26 +285,48 @@ export function createProduct(input: ProductInput): Product {
     created_at: now,
     updated_at: now,
   };
+
+  if (db) {
+    await requireDb().insert(productsTable).values({
+      productId: product.product_id,
+      slug: product.slug,
+      name: product.name,
+      category: product.category,
+      description: product.description,
+      descriptionEn: product.description_en ?? null,
+      model3d: product.model3d ?? null,
+      price: product.price,
+      priceOriginal: product.price_original,
+      images: product.images,
+      variants: product.variants,
+      badges: product.badges,
+      isActive: product.is_active,
+    });
+    return product;
+  }
+
+  const list = readAllFile();
   list.push(product);
-  writeAll(list);
+  writeAllFile(list);
   return product;
 }
 
-export function updateProduct(
+export async function updateProduct(
   id: string,
   input: ProductInput
-): Product | null {
-  const list = readAll();
-  const idx = list.findIndex((p) => p.product_id === id);
-  if (idx === -1) return null;
-  const prev = list[idx];
+): Promise<Product | null> {
+  const prev = await getProductById(id);
+  if (!prev) return null;
+
+  const slug =
+    slugify(input.name) !== prev.slug
+      ? await uniqueSlug(slugify(input.name), id)
+      : prev.slug;
+
   const updated: Product = {
     ...prev,
     name: input.name,
-    slug:
-      slugify(input.name) !== prev.slug
-        ? uniqueSlug(slugify(input.name), id)
-        : prev.slug,
+    slug,
     category: input.category,
     description: input.description,
     description_en: input.description_en,
@@ -252,13 +339,52 @@ export function updateProduct(
     is_active: input.is_active ?? true,
     updated_at: new Date().toISOString(),
   };
+
+  if (db) {
+    await requireDb()
+      .update(productsTable)
+      .set({
+        name: updated.name,
+        slug: updated.slug,
+        category: updated.category,
+        description: updated.description,
+        descriptionEn: updated.description_en ?? null,
+        model3d: updated.model3d ?? null,
+        price: updated.price,
+        priceOriginal: updated.price_original,
+        images: updated.images,
+        variants: updated.variants,
+        badges: updated.badges,
+        isActive: updated.is_active,
+        updatedAt: new Date(),
+      })
+      .where(eq(productsTable.productId, id));
+    return updated;
+  }
+
+  const list = readAllFile();
+  const idx = list.findIndex((p) => p.product_id === id);
+  if (idx === -1) return null;
   list[idx] = updated;
-  writeAll(list);
+  writeAllFile(list);
   return updated;
 }
 
-export function setActive(id: string, active: boolean): Product | null {
-  const list = readAll();
+export async function setActive(
+  id: string,
+  active: boolean
+): Promise<Product | null> {
+  if (db) {
+    const prev = await getProductById(id);
+    if (!prev) return null;
+    await requireDb()
+      .update(productsTable)
+      .set({ isActive: active, updatedAt: new Date() })
+      .where(eq(productsTable.productId, id));
+    return { ...prev, is_active: active, updated_at: new Date().toISOString() };
+  }
+
+  const list = readAllFile();
   const idx = list.findIndex((p) => p.product_id === id);
   if (idx === -1) return null;
   list[idx] = {
@@ -266,14 +392,23 @@ export function setActive(id: string, active: boolean): Product | null {
     is_active: active,
     updated_at: new Date().toISOString(),
   };
-  writeAll(list);
+  writeAllFile(list);
   return list[idx];
 }
 
-export function deleteProduct(id: string): boolean {
-  const list = readAll();
+export async function deleteProduct(id: string): Promise<boolean> {
+  if (db) {
+    const prev = await getProductById(id);
+    if (!prev) return false;
+    await requireDb()
+      .delete(productsTable)
+      .where(eq(productsTable.productId, id));
+    return true;
+  }
+
+  const list = readAllFile();
   const next = list.filter((p) => p.product_id !== id);
   if (next.length === list.length) return false;
-  writeAll(next);
+  writeAllFile(next);
   return true;
 }

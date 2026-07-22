@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   description: "Produk Lucksport yang Anda simpan sebagai favorit.",
 };
 
-export default function WishlistPage() {
+export default async function WishlistPage() {
   return (
     <WishlistClient
-      products={getActiveProducts()}
-      summaries={getRatingSummaries()}
+      products={await getActiveProducts()}
+      summaries={await getRatingSummaries()}
     />
   );
 }

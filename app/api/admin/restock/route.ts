@@ -5,5 +5,5 @@ export const dynamic = "force-dynamic";
 
 // GET /api/admin/restock — daftar permintaan (admin, dilindungi middleware).
 export async function GET() {
-  return NextResponse.json({ requests: getAllRestock() });
+  return NextResponse.json({ requests: await getAllRestock() });
 }

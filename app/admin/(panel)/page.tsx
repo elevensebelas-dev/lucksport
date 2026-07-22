@@ -12,10 +12,10 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default function AdminDashboardPage() {
-  const products = getAllProductsAdmin();
-  const reviews = getAllReviews();
-  const restock = getAllRestock();
+export default async function AdminDashboardPage() {
+  const products = await getAllProductsAdmin();
+  const reviews = await getAllReviews();
+  const restock = await getAllRestock();
 
   const active = products.filter((p) => p.is_active).length;
   const inventoryValue = products.reduce(

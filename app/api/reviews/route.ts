@@ -13,7 +13,7 @@ const WINDOW_MS = 60 * 60 * 1000;
 export async function GET(request: Request) {
   const id = new URL(request.url).searchParams.get("product_id");
   if (!id) return NextResponse.json({ reviews: [] });
-  return NextResponse.json({ reviews: getApprovedReviews(id) });
+  return NextResponse.json({ reviews: await getApprovedReviews(id) });
 }
 
 // POST /api/reviews — kirim ulasan (publik).
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ review: null }, { status: 201 });
   }
 
-  const result = addReview({
+  const result = await addReview({
     product_id: String(body.product_id ?? ""),
     name: String(body.name ?? ""),
     rating: Number(body.rating),
