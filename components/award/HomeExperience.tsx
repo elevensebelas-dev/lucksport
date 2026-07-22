@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { Fragment, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -13,7 +12,7 @@ import { blurDataURL } from "@/lib/image";
 import type { Product } from "@/lib/types";
 import { WhatsAppIcon } from "@/components/Icons";
 
-const LakeScene = dynamic(() => import("./LakeScene"), { ssr: false });
+import HeroVideo from "./HeroVideo";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -260,7 +259,7 @@ export default function HomeExperience({ products }: { products: Product[] }) {
 
       {/* ════════ HERO — danau Jatiluhur (Three.js) ════════ */}
       <section className="hero-section relative h-[100svh] min-h-[560px] overflow-hidden">
-        <LakeScene />
+        <HeroVideo />
         {/* Vignette bawah: transisi mulus ke section berikutnya */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-48 bg-gradient-to-b from-transparent to-[#0e3550]" />
         <div className="hero-overlay container-content relative z-10 flex h-full flex-col items-center justify-center text-center">
