@@ -14,7 +14,9 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
-const url = process.env.DATABASE_URL;
+// Bersihkan nilai env dari kesalahan tempel yang umum: tanda kutip pengapit
+// (Supabase menampilkan DATABASE_URL="postgres://…") dan spasi/baris baru.
+const url = process.env.DATABASE_URL?.trim().replace(/^['"]|['"]$/g, "");
 
 // Cache koneksi antar hot-reload dev agar tidak membuka banyak koneksi.
 const globalForDb = globalThis as unknown as {
@@ -23,17 +25,26 @@ const globalForDb = globalThis as unknown as {
 
 function makeSql() {
   if (!url) return undefined;
-  return (
-    globalForDb._sql ??
-    (globalForDb._sql = postgres(url, {
+  if (globalForDb._sql) return globalForDb._sql;
+  try {
+    return (globalForDb._sql = postgres(url, {
       prepare: false, // wajib untuk transaction pooler (Supabase/PgBouncer)
       max: 1, // serverless: 1 koneksi per invocation sudah cukup
       // Tutup socket yang menganggur agar proses (build/serverless) bisa keluar
       // dan koneksi pooler tidak tertahan.
       idle_timeout: 20,
       connect_timeout: 10,
-    }))
-  );
+    }));
+  } catch (err) {
+    // DATABASE_URL cacat (mis. salah tempel) tidak boleh merobohkan build atau
+    // seluruh situs — catat jelas, lalu jatuh ke data file/SEED.
+    console.error(
+      "DATABASE_URL tidak valid — situs berjalan tanpa database (fallback file/SEED). " +
+        "Periksa nilainya: harus 'postgresql://…:6543/postgres', tanpa tanda kutip.",
+      err
+    );
+    return undefined;
+  }
 }
 
 const sql = makeSql();
