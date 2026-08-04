@@ -2,6 +2,11 @@ import type { MetadataRoute } from "next";
 import { readAll } from "@/lib/store";
 import { STORE } from "@/lib/config";
 
+// Dibuat saat diminta, bukan saat build: daftar produk ada di database, jadi
+// build tidak boleh bergantung pada koneksi DB — sekaligus membuat produk baru
+// langsung masuk sitemap tanpa perlu rebuild.
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = `https://${STORE.domain}`;
   const staticRoutes = [

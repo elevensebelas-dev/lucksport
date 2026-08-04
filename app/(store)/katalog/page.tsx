@@ -4,6 +4,11 @@ import CatalogClient from "@/components/CatalogClient";
 import { getActiveProducts } from "@/lib/store";
 import { getRatingSummaries } from "@/lib/reviews";
 
+// Dirender saat diminta, bukan saat build: data katalog ada di database,
+// sehingga build tidak boleh bergantung pada koneksi DB (build Vercel pernah
+// gagal karena query saat build menggantung/timeout).
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Katalog Produk",
   description:

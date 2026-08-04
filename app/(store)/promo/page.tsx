@@ -7,6 +7,11 @@ import { getRatingSummaries } from "@/lib/reviews";
 import { discountPercent } from "@/components/Badge";
 import { STORE } from "@/lib/config";
 
+// Dirender saat diminta, bukan saat build: data katalog ada di database,
+// sehingga build tidak boleh bergantung pada koneksi DB (build Vercel pernah
+// gagal karena query saat build menggantung/timeout).
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Promo & Diskon",
   description:

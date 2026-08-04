@@ -28,6 +28,10 @@ function makeSql() {
     (globalForDb._sql = postgres(url, {
       prepare: false, // wajib untuk transaction pooler (Supabase/PgBouncer)
       max: 1, // serverless: 1 koneksi per invocation sudah cukup
+      // Tutup socket yang menganggur agar proses (build/serverless) bisa keluar
+      // dan koneksi pooler tidak tertahan.
+      idle_timeout: 20,
+      connect_timeout: 10,
     }))
   );
 }

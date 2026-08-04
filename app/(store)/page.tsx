@@ -3,6 +3,11 @@ import HomeExperience from "@/components/award/HomeExperience";
 import { getActiveProducts } from "@/lib/store";
 import { STORE } from "@/lib/config";
 
+// Dirender saat diminta, bukan saat build: data katalog ada di database,
+// sehingga build tidak boleh bergantung pada koneksi DB (build Vercel pernah
+// gagal karena query saat build menggantung/timeout).
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const products = await getActiveProducts();
   const base = `https://${STORE.domain}`;

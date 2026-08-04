@@ -6,11 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import ReviewSection from "@/components/ReviewSection";
 import T from "@/components/T";
 import { formatIDR, totalStock } from "@/lib/products";
-import {
-  getProductBySlug,
-  getRelatedProducts,
-  readAll,
-} from "@/lib/store";
+import { getProductBySlug, getRelatedProducts } from "@/lib/store";
 import {
   getApprovedReviews,
   getRatingSummary,
@@ -18,13 +14,15 @@ import {
 } from "@/lib/reviews";
 import { STORE } from "@/lib/config";
 
+// Dirender saat diminta (SSR), bukan saat build — dan sengaja TANPA
+// generateStaticParams: katalog ada di database, jadi membacanya saat build
+// membuat build bergantung pada koneksi DB (build Vercel pernah gagal dengan
+// "statement timeout"), dan produk baru dari admin tak akan tampil sampai
+// rebuild. SSR tetap ramah SEO — HTML penuh dikirim ke crawler.
+export const dynamic = "force-dynamic";
+
 interface Params {
   params: Promise<{ slug: string }>;
-}
-
-// Pre-render semua halaman produk (SSG) untuk SEO & performa (PRD 7.2).
-export async function generateStaticParams() {
-  return (await readAll()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
