@@ -6,7 +6,7 @@
 import fs from "fs";
 import path from "path";
 import { eq, desc } from "drizzle-orm";
-import { db, requireDb } from "./db/client";
+import { db, requireDb, withRetry } from "./db/client";
 import { restockRequests as restockTable } from "./db/schema";
 import type { RestockRequest } from "./types";
 
@@ -49,7 +49,7 @@ function writeRestockFile(list: RestockRequest[]) {
 
 export async function readRestock(): Promise<RestockRequest[]> {
   if (db) {
-    const rows = await db.select().from(restockTable);
+    const rows = await withRetry(() => db!.select().from(restockTable));
     return rows.map(rowToRestock);
   }
   return readRestockFile();
@@ -57,10 +57,9 @@ export async function readRestock(): Promise<RestockRequest[]> {
 
 export async function getAllRestock(): Promise<RestockRequest[]> {
   if (db) {
-    const rows = await db
-      .select()
-      .from(restockTable)
-      .orderBy(desc(restockTable.createdAt));
+    const rows = await withRetry(() =>
+      db!.select().from(restockTable).orderBy(desc(restockTable.createdAt))
+    );
     return rows.map(rowToRestock);
   }
   return readRestockFile().sort(

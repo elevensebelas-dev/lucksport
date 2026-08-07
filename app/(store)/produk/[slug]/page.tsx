@@ -45,13 +45,27 @@ export default async function ProductPage({ params }: Params) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const related = await getRelatedProducts(product, 4);
   const base = `https://${STORE.domain}`;
   const inStock = totalStock(product) > 0;
 
-  const reviews = await getApprovedReviews(product.product_id);
-  const summary = await getRatingSummary(product.product_id);
-  const summaries = await getRatingSummaries();
+  // Query dijalankan paralel, bukan berurutan: database berada di region lain,
+  // sehingga tiap round-trip mahal. Sebelumnya 5 query berurutan (~2 detik).
+  const [related, reviews, summaries] = await Promise.all([
+    getRelatedProducts(product, 4),
+    getApprovedReviews(product.product_id),
+    getRatingSummaries(),
+  ]);
+
+  // Rangkuman rating dihitung dari `reviews` yang sudah diambil — memanggil
+  // getRatingSummary() akan mengulang query yang sama persis.
+  const summary = {
+    average: reviews.length
+      ? Math.round(
+          (reviews.reduce((n, r) => n + r.rating, 0) / reviews.length) * 10
+        ) / 10
+      : 0,
+    count: reviews.length,
+  };
 
   const productLd = {
     "@context": "https://schema.org",

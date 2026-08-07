@@ -6,7 +6,7 @@
 import fs from "fs";
 import path from "path";
 import { eq, desc, and } from "drizzle-orm";
-import { db, requireDb } from "./db/client";
+import { db, requireDb, withRetry } from "./db/client";
 import { reviews as reviewsTable } from "./db/schema";
 import type { Review } from "./types";
 
@@ -51,7 +51,7 @@ function writeReviewsFile(list: Review[]) {
 
 export async function readReviews(): Promise<Review[]> {
   if (db) {
-    const rows = await db.select().from(reviewsTable);
+    const rows = await withRetry(() => db!.select().from(reviewsTable));
     return rows.map(rowToReview);
   }
   return readReviewsFile();
@@ -60,13 +60,18 @@ export async function readReviews(): Promise<Review[]> {
 // Ulasan yang tampil di storefront (sudah disetujui), terbaru dulu.
 export async function getApprovedReviews(productId: string): Promise<Review[]> {
   if (db) {
-    const rows = await db
-      .select()
-      .from(reviewsTable)
-      .where(
-        and(eq(reviewsTable.productId, productId), eq(reviewsTable.approved, true))
-      )
-      .orderBy(desc(reviewsTable.createdAt));
+    const rows = await withRetry(() =>
+      db!
+        .select()
+        .from(reviewsTable)
+        .where(
+          and(
+            eq(reviewsTable.productId, productId),
+            eq(reviewsTable.approved, true)
+          )
+        )
+        .orderBy(desc(reviewsTable.createdAt))
+    );
     return rows.map(rowToReview);
   }
   return readReviewsFile()
@@ -79,10 +84,9 @@ export async function getApprovedReviews(productId: string): Promise<Review[]> {
 
 export async function getAllReviews(): Promise<Review[]> {
   if (db) {
-    const rows = await db
-      .select()
-      .from(reviewsTable)
-      .orderBy(desc(reviewsTable.createdAt));
+    const rows = await withRetry(() =>
+      db!.select().from(reviewsTable).orderBy(desc(reviewsTable.createdAt))
+    );
     return rows.map(rowToReview);
   }
   return readReviewsFile().sort(

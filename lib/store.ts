@@ -11,7 +11,7 @@
 import fs from "fs";
 import path from "path";
 import { eq, desc } from "drizzle-orm";
-import { db, requireDb } from "./db/client";
+import { db, requireDb, withRetry } from "./db/client";
 import { products as productsTable } from "./db/schema";
 import { products as SEED, isCallForPriceCategory } from "./products";
 import type { Product, Category, Variant, Badge } from "./types";
@@ -71,7 +71,7 @@ function writeAllFile(list: Product[]): void {
 // ── Query (storefront) ──
 export async function readAll(): Promise<Product[]> {
   if (db) {
-    const rows = await db.select().from(productsTable);
+    const rows = await withRetry(() => db!.select().from(productsTable));
     return rows.map(rowToProduct);
   }
   return readAllFile();
@@ -84,10 +84,9 @@ export async function getActiveProducts(): Promise<Product[]> {
 export async function getAllProductsAdmin(): Promise<Product[]> {
   // Termasuk produk nonaktif, urut terbaru diperbarui.
   if (db) {
-    const rows = await db
-      .select()
-      .from(productsTable)
-      .orderBy(desc(productsTable.updatedAt));
+    const rows = await withRetry(() =>
+      db!.select().from(productsTable).orderBy(desc(productsTable.updatedAt))
+    );
     return rows.map(rowToProduct);
   }
   return readAllFile().sort(
@@ -100,11 +99,9 @@ export async function getProductBySlug(
   slug: string
 ): Promise<Product | undefined> {
   if (db) {
-    const rows = await db
-      .select()
-      .from(productsTable)
-      .where(eq(productsTable.slug, slug))
-      .limit(1);
+    const rows = await withRetry(() =>
+      db!.select().from(productsTable).where(eq(productsTable.slug, slug)).limit(1)
+    );
     const p = rows[0] ? rowToProduct(rows[0]) : undefined;
     return p?.is_active ? p : undefined;
   }
@@ -115,11 +112,9 @@ export async function getProductById(
   id: string
 ): Promise<Product | undefined> {
   if (db) {
-    const rows = await db
-      .select()
-      .from(productsTable)
-      .where(eq(productsTable.productId, id))
-      .limit(1);
+    const rows = await withRetry(() =>
+      db!.select().from(productsTable).where(eq(productsTable.productId, id)).limit(1)
+    );
     return rows[0] ? rowToProduct(rows[0]) : undefined;
   }
   return (await readAll()).find((p) => p.product_id === id);

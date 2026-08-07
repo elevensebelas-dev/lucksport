@@ -29,7 +29,10 @@ function makeSql() {
   try {
     return (globalForDb._sql = postgres(url, {
       prepare: false, // wajib untuk transaction pooler (Supabase/PgBouncer)
-      max: 1, // serverless: 1 koneksi per invocation sudah cukup
+      // Satu halaman menjalankan beberapa query paralel; dengan max:1 query
+      // saling mengantre di satu koneksi dan bisa buntu. Transaction pooler
+      // sanggup melayani beberapa koneksi per instance.
+      max: 5,
       // Tutup socket yang menganggur agar proses (build/serverless) bisa keluar
       // dan koneksi pooler tidak tertahan.
       idle_timeout: 20,
@@ -50,6 +53,23 @@ function makeSql() {
 const sql = makeSql();
 
 export const db = sql ? drizzle(sql, { schema }) : null;
+
+/**
+ * Jalankan query baca dengan satu kali percobaan ulang.
+ *
+ * Koneksi ke transaction pooler sesekali putus (cold start, socket menganggur
+ * ditutup, jaringan lintas region). Tanpa ini, satu gangguan sesaat membuat
+ * pengunjung melihat halaman error — padahal percobaan kedua hampir selalu
+ * berhasil karena koneksi langsung dibangun ulang.
+ */
+export async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    console.warn("Query database gagal, mencoba ulang sekali:", err);
+    return fn();
+  }
+}
 
 // Helper: pastikan DB aktif, atau lempar error jelas (dipakai jalur tulis admin).
 export function requireDb() {
