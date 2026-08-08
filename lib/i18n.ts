@@ -191,6 +191,21 @@ const id: Dict = {
   "award.stats.categories": "Kategori",
   "award.stats.handmade": "Buatan Indonesia",
   "award.stats.assist": "Asisten Online",
+
+  // ── Halaman kategori (SEO: "jual kayak", "jual kano", dst.) ──
+  "cat.crumbHome": "Beranda",
+  "cat.productsTitle": "Pilihan {category} Luck Sport",
+  "cat.empty": "Produk kategori ini sedang disiapkan. Hubungi kami untuk pemesanan khusus.",
+  "cat.whyTitle": "Mengapa memilih Luck Sport",
+  "cat.why1": "Dibuat dan diuji langsung di Danau Jatiluhur, Purwakarta",
+  "cat.why2": "Dikerjakan tangan perajin Indonesia, bukan barang impor massal",
+  "cat.why3": "Spesifikasi bisa disesuaikan — ukuran, warna, dan material",
+  "cat.why4": "Konsultasi langsung dengan pembuatnya via WhatsApp",
+  "cat.faqTitle": "Pertanyaan yang sering diajukan",
+  "cat.ctaTitle": "Ingin tahu harga dan ketersediaan?",
+  "cat.ctaText": "Setiap perahu dibuat sesuai kebutuhan, jadi harganya menyesuaikan spesifikasi. Chat kami untuk penawaran.",
+  "cat.ctaButton": "Tanya via WhatsApp",
+  "cat.seeAll": "Lihat semua produk",
   "award.cta.title": "Siap Turun ke Air?",
   "award.cta.sub":
     "Ceritakan kebutuhanmu — tim kami siap merekomendasikan perahu yang tepat.",
@@ -403,6 +418,21 @@ const en: Dict = {
   "award.stats.categories": "Categories",
   "award.stats.handmade": "Made in Indonesia",
   "award.stats.assist": "Assistant Online",
+
+  // ── Category pages (SEO) ──
+  "cat.crumbHome": "Home",
+  "cat.productsTitle": "Luck Sport {category} Range",
+  "cat.empty": "Products in this category are being prepared. Contact us for custom orders.",
+  "cat.whyTitle": "Why choose Luck Sport",
+  "cat.why1": "Built and tested on Lake Jatiluhur, Purwakarta",
+  "cat.why2": "Handcrafted by Indonesian artisans, not mass-produced imports",
+  "cat.why3": "Customisable specs — size, colour, and material",
+  "cat.why4": "Talk directly to the maker via WhatsApp",
+  "cat.faqTitle": "Frequently asked questions",
+  "cat.ctaTitle": "Want pricing and availability?",
+  "cat.ctaText": "Every boat is built to order, so pricing follows the spec. Chat with us for a quote.",
+  "cat.ctaButton": "Ask via WhatsApp",
+  "cat.seeAll": "See all products",
   "award.cta.title": "Ready to Hit the Water?",
   "award.cta.sub":
     "Tell us what you need — our team will recommend the right boat.",

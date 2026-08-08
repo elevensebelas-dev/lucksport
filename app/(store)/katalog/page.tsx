@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Katalog Produk",
   description:
-    "Jelajahi katalog lengkap Lucksport: jersey, sepatu, celana, dan aksesori olahraga. Filter berdasarkan kategori, harga, dan ketersediaan.",
+    "Katalog lengkap Luck Sport: kayak, kano, perahu karet, dan papan SUP buatan tangan. Saring berdasarkan kategori dan ketersediaan.",
 };
 
 export default async function KatalogPage() {

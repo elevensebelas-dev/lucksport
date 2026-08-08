@@ -3,7 +3,11 @@ import Logo from "./Logo";
 import T from "./T";
 import { STORE } from "@/lib/config";
 import { CATEGORIES } from "@/lib/products";
+import { CATEGORY_CONTENT } from "@/lib/categories";
 import { WhatsAppIcon } from "./Icons";
+
+// Kategori yang punya halaman SEO sendiri.
+const CATEGORY_SEO_SLUGS = new Set(CATEGORY_CONTENT.map((c) => c.slug));
 
 export default function Footer() {
   return (
@@ -34,8 +38,15 @@ export default function Footer() {
           <ul className="mt-4 space-y-2 text-sm">
             {CATEGORIES.map((c) => (
               <li key={c.slug}>
+                {/* Mengarah ke halaman kategori (/kayak, /kano, …) bila ada —
+                    bukan /katalog?kategori=…, agar halaman SEO itu tertaut
+                    dari setiap halaman dan mudah ditemukan mesin pencari. */}
                 <Link
-                  href={`/katalog?kategori=${c.slug}`}
+                  href={
+                    CATEGORY_SEO_SLUGS.has(c.slug)
+                      ? `/${c.slug}`
+                      : `/katalog?kategori=${c.slug}`
+                  }
                   className="text-slate-600 hover:text-brand-600"
                 >
                   {c.name}
