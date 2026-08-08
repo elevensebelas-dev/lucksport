@@ -32,10 +32,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: product.name,
     description: `${product.name} — ${formatIDR(product.price)}. ${product.description.slice(0, 140)}`,
+    // `images` sengaja tidak diisi: kartu share dibuat otomatis oleh
+    // opengraph-image.tsx di folder ini. Mengisinya di sini akan menimpanya.
     openGraph: {
       title: product.name,
       description: product.description.slice(0, 160),
-      images: [{ url: product.images[0] }],
+      type: "website",
+      url: `/produk/${product.slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: product.description.slice(0, 160),
     },
   };
 }

@@ -98,9 +98,11 @@ export default function ProductDetail({
 
   const soldOut = product.variants.every((v) => v.stock === 0);
   const callCS = isCallForPrice(product);
-  // Setiap produk punya 3D viewer; pakai model produk bila ada, jika tidak
-  // pakai model contoh (placeholder) agar fitur tetap dapat dicoba.
-  const model3dSrc = product.model3d ?? "/models/sample.glb";
+  // Tab 3D hanya untuk produk yang punya modelnya sendiri. Sebelumnya semua
+  // produk memakai model contoh yang sama, sehingga pembeli melihat objek 3D
+  // yang bukan perahu yang sedang dilihatnya.
+  const model3dSrc = product.model3d;
+  const has3d = Boolean(model3dSrc);
 
   function handleAdd() {
     if (!size) {
@@ -153,27 +155,29 @@ export default function ProductDetail({
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         {/* ── Galeri foto / 3D (focal point, PRD 5.3.1) ── */}
         <div>
-          {/* Toggle Foto / 3D */}
-          <div className="mb-3 inline-flex rounded-lg border border-slate-200 p-0.5 text-sm font-semibold">
-            <button
-              onClick={() => setView3d(false)}
-              aria-pressed={!view3d}
-              className={`rounded-md px-3 py-1.5 transition-colors ${
-                !view3d ? "bg-brand-600 text-white" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              {t("pd.viewPhotos")}
-            </button>
-            <button
-              onClick={() => setView3d(true)}
-              aria-pressed={view3d}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors ${
-                view3d ? "bg-brand-600 text-white" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <CubeIcon width={16} height={16} /> {t("pd.view3d")}
-            </button>
-          </div>
+          {/* Toggle Foto / 3D — hanya bila produk punya model 3D sendiri */}
+          {has3d && (
+            <div className="mb-3 inline-flex rounded-lg border border-slate-200 p-0.5 text-sm font-semibold">
+              <button
+                onClick={() => setView3d(false)}
+                aria-pressed={!view3d}
+                className={`rounded-md px-3 py-1.5 transition-colors ${
+                  !view3d ? "bg-brand-600 text-white" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {t("pd.viewPhotos")}
+              </button>
+              <button
+                onClick={() => setView3d(true)}
+                aria-pressed={view3d}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors ${
+                  view3d ? "bg-brand-600 text-white" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <CubeIcon width={16} height={16} /> {t("pd.view3d")}
+              </button>
+            </div>
+          )}
 
           <div
             className="relative aspect-square overflow-hidden rounded-xl bg-slate-100"
@@ -181,7 +185,7 @@ export default function ProductDetail({
             onMouseLeave={() => setZoom(false)}
             onMouseMove={view3d ? undefined : onMouseMove}
           >
-            {view3d ? (
+            {view3d && model3dSrc ? (
               <ModelViewer3D
                 src={model3dSrc}
                 alt={product.name}
