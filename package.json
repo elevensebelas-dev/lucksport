@@ -2,7 +2,7 @@
   "name": "lucksport-website",
   "version": "1.0.0",
   "private": true,
-  "description": "Website e-commerce Lucksport — katalog produk & keranjang belanja dengan checkout via WhatsApp",
+  "description": "Website e-commerce Lucksport \u2014 katalog produk & keranjang belanja dengan checkout via WhatsApp",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +10,8 @@
     "lint": "next lint",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:harden": "tsx scripts/harden-db.ts"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",

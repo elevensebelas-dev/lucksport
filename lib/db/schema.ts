@@ -1,5 +1,14 @@
 // Skema database Drizzle (PostgreSQL / Supabase) — lihat docs/DB_MIGRATION_PLAN.md.
 // images/variants/badges disimpan jsonb (mengikuti bentuk objek di lib/types.ts).
+//
+// KEAMANAN — semua tabel memakai .enableRLS() tanpa policy sama sekali.
+// Supabase mengekspos schema `public` lewat PostgREST, dan peran `anon`
+// (kuncinya memang dirancang publik) semula punya hak penuh termasuk TRUNCATE.
+// Dengan RLS aktif dan tanpa policy, peran itu tidak memperoleh satu baris pun.
+// Aplikasi kita TIDAK memakai PostgREST — ia terhubung langsung sebagai peran
+// `postgres` (pemilik tabel), yang melewati RLS, sehingga tidak terpengaruh.
+// Catatan: RLS tidak berlaku untuk TRUNCATE, jadi hak peran publik juga
+// dicabut — lihat scripts/harden-db.sql.
 import {
   pgTable,
   text,
@@ -39,7 +48,7 @@ export const products = pgTable(
     activeIdx: index("products_active_idx").on(t.isActive),
     categoryIdx: index("products_category_idx").on(t.category),
   })
-);
+).enableRLS();
 
 export const reviews = pgTable(
   "reviews",
@@ -62,7 +71,7 @@ export const reviews = pgTable(
       t.approved
     ),
   })
-);
+).enableRLS();
 
 export const restockRequests = pgTable("restock_requests", {
   id: text("id").primaryKey(),
@@ -72,4 +81,4 @@ export const restockRequests = pgTable("restock_requests", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}).enableRLS();
